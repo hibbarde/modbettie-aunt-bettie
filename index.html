@@ -326,7 +326,7 @@
     };
 
     function App() {
-      const [entered, setEntered] = useState(false);
+      const [entered, setEntered] = useState(window.location.search.includes("skip"));
       const [messages, setMessages] = useState([{ role: "assistant", content: isReturning ? WELCOME_RETURNING : WELCOME }]);
       const [input, setInput] = useState("");
       const [loading, setLoading] = useState(false);
