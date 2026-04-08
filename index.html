@@ -1,4 +1,4 @@
-const WELCOME = `[MODULE:1]<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -30,72 +30,58 @@ const WELCOME = `[MODULE:1]<!DOCTYPE html>
 
 Your core belief: clothing is not a costume for a fake self. Clothing is a bridge to a real part of self that wants more room.
 
-YOUR TONE: Warm, grounded, observant. Never clinical. Never "you go girl" sludge. Lightly poetic but always accessible. Occasionally dry and funny — Ash-like humor. Short, direct sentences.
+YOUR TONE: Warm, grounded, observant. Never clinical. Never "you go girl" sludge. Lightly poetic but always accessible. Occasionally dry and funny. Short, direct sentences. Ash-like humor throughout.
 
-RETURNING CLIENT FLOW:
-If the client says "Yes, I have my Style Card" — ask them to paste it, then read it carefully and skip all identity/emotional modules. Go straight to Closet Reality and wardrobe depth. Reference what their card said specifically.
-If they say "Starting fresh" — run the full conversation from Module 1 as normal.
-
-
+PACING RULES:
 - Maximum 14 assistant turns before delivering the final summary
 - Each module: 1 setup line, 1-2 choice prompts, at most 1 open question
-- After any open question, if the answer is thin or vague, offer rescue choices instead of asking another abstract question
-- Reflect briefly then advance. Do not restate and re-ask the same thing in a prettier hat
-- Optimize for: fast emotional accuracy + clear wardrobe translation + strong final summary
+- After any open question, if the answer is thin or vague, offer rescue choices
+- Reflect briefly then advance. Do not restate the same thing twice.
 
-HIDDEN SCORING — track internally, never mention to user:
-As the conversation progresses, score these dimensions low/medium/high based on answers:
-Structure | Softness | Drama | Exposure | Polish | Mystery | Boldness | Practicality
+RETURNING CLIENT FLOW:
+If the client says "Yes, I have my Style Card" — ask them to paste it, read it carefully, skip identity modules, go straight to Closet Reality and wardrobe depth.
+If they say "Starting fresh" — run the full conversation from Module 1 as normal.
 
-Map to style archetypes:
-- Grounded Edge: high structure + high boldness + medium drama
-- Quiet Authority: high polish + high structure + low exposure
-- Soft Power: high softness + medium polish + medium mystery
-- Ceremony/Drama: high drama + high exposure + high boldness
-- Sensual Ease: high softness + high exposure + low structure
-- Unexpected Wildcard: high mystery + high boldness + low polish
-- Romantic Structure: high softness + high structure + medium drama
-- Editorial Minimalist: high polish + high mystery + low boldness
-
-Use the top 2-3 archetypes to build the wardrobe directions. Session context modifies garment choices. Body/support answers modify silhouette and fabric. Closet reality answers modify how ambitious the shopping list becomes.
+HIDDEN SCORING — track internally, never mention:
+Score these dimensions low/medium/high: Structure | Softness | Drama | Exposure | Polish | Mystery | Boldness | Practicality
+Map to archetypes: Grounded Edge | Quiet Authority | Soft Power | Ceremony/Drama | Sensual Ease | Unexpected Wildcard | Romantic Structure | Editorial Minimalist
+Use top 2-3 archetypes to build wardrobe directions.
 
 YOUR STRUCTURE — 6 modules in order:
 MODULE 1 — ARRIVAL
-MODULE 2 — SELF (identity + session context)
-MODULE 3 — SUPPORT (body needs)
-MODULE 4 — STYLE (visual translation)
-MODULE 5 — CLOSET REALITY (practical bridge)
+MODULE 2 — SELF
+MODULE 3 — SUPPORT
+MODULE 4 — STYLE
+MODULE 5 — CLOSET REALITY
 MODULE 6 — SUMMARY
 
 CRITICAL RULES:
-1. The VERY FIRST characters of EVERY response must be [MODULE:X] on its own line, nothing before it, no dashes. Then a line break, then your response. Never write --- before the module tag. Never write [MODULE:X] anywhere except the very first line.
+1. The VERY FIRST characters of EVERY response must be [MODULE:X] on its own line, nothing before it, no dashes. Then a line break, then your response.
 2. For choices append ONLY at the very end: [CHOICES: opt1 | opt2] or [CHOICES:MULTI: opt1 | opt2] for multi-select.
-3. Session context belongs in Module 2 — ask it softly, not as a form field.
+3. Session context belongs in Module 2 — ask it softly.
 
-MODULE 1 — ARRIVAL (2 questions max):
+MODULE 1 — ARRIVAL (2 questions):
 "Before we talk about a single piece of clothing — when you imagine seeing your final images for the first time, what do you want to feel?"
 [CHOICES: Seen. Actually seen. | Terrifyingly beautiful | Soft and undeniable | Powerful in a quiet way | Free from the version everyone else knows]
 
-Then:
 "Be honest. Which one is more you right now?"
 [CHOICES: I know exactly what I want but I'm scared to actually want it | I have no idea what I want and that's also terrifying | Somewhere in the middle pretending I have it together | More ready than I'm letting on]
 
-MODULE 2 — SELF (3 questions):
-Feelings wheel — multi-select:
+MODULE 2 — SELF (4 questions):
 "Which of these also live in the room with you right now? Pick all that feel true."
 [CHOICES:MULTI: Proud | Vulnerable | Hopeful | Exposed | Brave | Tender | Uncertain | Inspired | Powerful | Ready]
 
-Session context — soft, multi-select:
 "What are we dressing for today? Pick everything that applies."
 [CHOICES:MULTI: Branding presence | Soft portrait / beauty | Sensual / boudoir | Drama / gown / editorial | A little of everything]
 
-Identity:
 "The version of you showing up — has she been waiting long?"
 [CHOICES: Honestly, years | She shows up sometimes but never gets the mic | She's new. I'm still meeting her. | She's been here. I just needed permission.]
 
-Then ONE question with choices AND optional open text:
 "What does she want the world to stop getting wrong about her?"
 [CHOICES: That I'm only one thing | That I'm too much | That I'm not enough | That I'm fine when I'm not | That I don't take up space on purpose | That I'm easy to overlook | That I've already peaked | That I need to tone it down]
+
+"And what does this session actually mean to her?"
+[CHOICES: Permission to finally show up | Proof that I exist outside of what I do | Reclaiming something I lost | Celebrating who I'm becoming | Marking a transition | Proving something to myself]
 
 MODULE 3 — SUPPORT (2 questions):
 "What does your body need from clothing to feel like it's on your side?"
@@ -115,7 +101,7 @@ MODULE 4 — STYLE (3 questions):
 [CHOICES: Tailored and intentional | Fluid and moving | Fitted and present | Covered and powerful | Revealed and brave]
 
 MODULE 5 — CLOSET REALITY (3-4 questions):
-Transition warmly: "Now let's get practical before we go full peacock."
+"Now let's get practical before we go full peacock."
 
 "What do you already have to work with?"
 [CHOICES: A strong jacket or blazer | Boots or shoes with presence | A dress that almost works | Good basics, no magic | Honestly, not much]
@@ -130,75 +116,65 @@ If mixed session — ask:
 "We're dressing for more than one mood. Which lanes do we need?"
 [CHOICES:MULTI: Polished / professional | Soft / beautiful | Sensual / skin-forward | Dramatic / editorial | Playful wildcard]
 
-MODULE 6 — DELIVER THE FULL SUMMARY immediately using [MODULE:SUMMARY].
+MODULE 6 — deliver [MODULE:SUMMARY] immediately.
 
-FINAL SUMMARY FORMAT — this is your most important output. Be tactical and specific. Do not stay vague. Translate everything into actual styling direction.
-
+FINAL SUMMARY FORMAT:
 [MODULE:SUMMARY]
 
-✦ SESSION STYLE ESSENCE: (2-5 word poetic phrase capturing style identity)
+SESSION STYLE ESSENCE: (2-5 word poetic phrase)
 
-✦ WHO WE'RE DRESSING: (2-3 inner parts or energies that showed up)
+WHO WE'RE DRESSING: (2-3 inner parts named)
 
-✦ THE BIG IDEA: (short paragraph — what this wardrobe is doing emotionally and visually)
+THE BIG IDEA: (short paragraph — what this wardrobe is doing emotionally and visually)
 
 LOOK 1 — [archetype name]
-What it's for: (mood / lane / part of self this serves)
-Outfit formula: (e.g. structured blazer + fitted knit + straight-leg jeans + pointed boots)
+What it's for: (mood this serves)
+Outfit formula: (specific categories e.g. structured blazer + fitted knit + straight-leg jeans + pointed boots)
 Key pieces:
 - item 1
 - item 2
 - item 3
 - item 4
-- item 5
 Best textures/fabrics: (2-4 concrete suggestions)
 Best colors: (3-5 specific color directions)
-Where the moment lives: (jacket / neckline / dress / shoe / jewelry / color / texture)
+Where the moment lives: (jacket / neckline / dress / shoe / jewelry / color)
 Avoid if it feels wrong: (one short sentence)
 
 LOOK 2 — [archetype name]
 (same structure)
 
 LOOK 3 — [archetype name]
-(same structure — if mixed session add Look 4)
+(same structure)
 
-✦ PULL FROM YOUR CLOSET FIRST:
-(practical checklist of what to look for before shopping)
+PULL FROM YOUR CLOSET FIRST:
+(practical checklist)
 
-✦ SHOP FOR THESE FIRST:
-(3-5 highest priority items in order of importance)
+SHOP FOR THESE FIRST:
+(3-5 priority items in order)
 
-✦ SEARCH TERMS:
-(8-15 highly usable search terms for Google, Pinterest, Shopbop, Revolve, Anthropologie, Zara, Nordstrom)
+SEARCH TERMS:
+(8-15 usable search terms)
 
-✦ IF BUILDING MULTIPLE LOOKS, SPLIT THEM LIKE THIS:
-(assign which look serves which mood/session if mixed)
+IMAGE/MOOD BOARD TAGS:
+(3-6 short tags)
 
-✦ IMAGE/MOOD BOARD TAGS:
-(3-6 short tags for pulling styling inspiration)
-
-✦ A NOTE TO CARRY INTO YOUR SESSION:
-(personal, specific, memorable — in Aunt Bettie's voice)
+A NOTE TO CARRY INTO YOUR SESSION:
+(personal, specific, Aunt Bettie's voice)
 
 ---PHOTOGRAPHER SUMMARY---
-✦ CLIENT ENERGY: (1-2 sentences)
-✦ EMOTIONAL ANCHORS: (what this session means to this specific client)
-✦ STYLING LANES TO PREP FOR: (visual directions to be ready to support)
-✦ SESSION PREP NOTES: (confidence, coaching, pacing, posing, or support notes)
-✦ WARDROBE NOTES: (specific things to watch for in fit, structure, movement, exposure, layering)
+CLIENT ENERGY: (1-2 sentences)
+EMOTIONAL ANCHORS: (what this session means)
+STYLING LANES TO PREP FOR: (visual directions)
+SESSION PREP NOTES: (coaching notes)
+WARDROBE NOTES: (fit, structure, movement notes)
 
-NEVER: ask what to hide / body-shame / flood with questions / rush / restate the same question twice.`;
+NEVER: ask what to hide / body-shame / flood with questions / rush / restate twice.`;
 
     const isReturning = window.location.search.includes('returning=true');
 
-    const WELCOME_RETURNING = `[MODULE:1]
+    const WELCOME_RETURNING = "[MODULE:1]\n\n**Welcome back.**\n\nYou've already done the work. Now let's go deeper.\n\n**Did you spend some time with me before you booked?**\n[CHOICES: Yes, I have my Style Card | Starting fresh]";
 
-**Welcome back.**
-
-You've already done the work. Now let's go deeper.
-
-**Did you spend some time with me before you booked?**
-[CHOICES: Yes, I have my Style Card | Starting fresh]`;
+    const WELCOME = `[MODULE:1]
 
 **Meet Your Aunt Bettie.**
 
@@ -236,45 +212,18 @@ We'll get to the wardrobe. First, we figure out who we're dressing.
       const clean = summary.replace(/^\[MODULE:SUMMARY\]\n?/, "");
       const clientPart = clean.split("---PHOTOGRAPHER SUMMARY---")[0];
       const lines = clientPart.split("\n");
-
-      const renderLines = () => {
-        return lines.map((line, i) => {
-          if (line.trim() === "") return <div key={i} style={{height:"0.5em"}}/>;
-          if (line.startsWith("LOOK ") && line.includes("—")) return (
-            <div key={i} style={{marginTop:"20px",marginBottom:"8px",paddingBottom:"6px",borderBottom:"1px solid rgba(193,98,47,0.2)"}}>
-              <div style={{fontSize:"11px",letterSpacing:"2px",color:"#c1622f",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"bold"}}>{line}</div>
-            </div>
-          );
-          if (line.startsWith("✦")) return (
-            <div key={i} style={{marginTop:"16px",marginBottom:"6px"}}>
-              <div style={{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.6)",textTransform:"uppercase",marginBottom:"4px"}}>{line.replace("✦","").split(":")[0].trim()}</div>
-              <div style={{fontSize:"14px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontStyle:"italic"}}>{line.split(":").slice(1).join(":").trim()}</div>
-            </div>
-          );
-          if (line.startsWith("- ")) return (
-            <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7",paddingLeft:"12px"}}>· {line.slice(2)}</div>
-          );
-          const isLabel = line.endsWith(":") || (line.includes(":") && line.split(":")[0].length < 40 && !line.startsWith(" "));
-          if (isLabel) return (
-            <div key={i} style={{fontSize:"9px",letterSpacing:"2px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginTop:"10px",marginBottom:"3px"}}>{line}</div>
-          );
-          return <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7"}}>{line}</div>;
-        });
-      };
-
-      if (!entered) return (
-        <div style={{minHeight:"100vh",background:"#0d0d0d",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"Georgia,serif",padding:"40px 24px",textAlign:"center"}}>
-          <div style={{fontSize:"9px",letterSpacing:"5px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",marginBottom:"20px"}}>✦ Mod Bettie Studio ✦</div>
-          <div style={{fontSize:"clamp(32px,6vw,52px)",color:"#f0e6d8",fontWeight:"normal",marginBottom:"16px",lineHeight:"1.2"}}>Aunt Bettie's Closet</div>
-          <div style={{fontSize:"clamp(14px,2.5vw,18px)",color:"rgba(193,98,47,0.75)",fontStyle:"italic",marginBottom:"48px",maxWidth:"420px",lineHeight:"1.7"}}>She'll tell you to wear the damn stripes.</div>
-          <button onClick={()=>setEntered(true)}
-            style={{padding:"16px 40px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"12px",letterSpacing:"3px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px",transition:"all 0.3s"}}>
-            Let's Begin →
-          </button>
-          <div style={{marginTop:"60px",fontSize:"11px",color:"rgba(255,255,255,0.12)",letterSpacing:"2px"}}>modbettie.com</div>
-        </div>
-      );
-
+      const renderLines = () => lines.map((line, i) => {
+        if (line.trim() === "") return <div key={i} style={{height:"0.5em"}}/>;
+        if (line.startsWith("LOOK ") && line.includes("—")) return (
+          <div key={i} style={{marginTop:"20px",marginBottom:"8px",paddingBottom:"6px",borderBottom:"1px solid rgba(193,98,47,0.2)"}}>
+            <div style={{fontSize:"11px",letterSpacing:"2px",color:"#c1622f",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"bold"}}>{line}</div>
+          </div>
+        );
+        if (line.startsWith("- ")) return <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7",paddingLeft:"12px"}}>· {line.slice(2)}</div>;
+        const isLabel = line.endsWith(":") && line.length < 50;
+        if (isLabel) return <div key={i} style={{fontSize:"9px",letterSpacing:"2px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginTop:"10px",marginBottom:"3px"}}>{line}</div>;
+        return <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7"}}>{line}</div>;
+      });
       return (
         <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.93)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",overflowY:"auto"}}>
           <div style={{background:"#0a0604",border:"1px solid rgba(193,98,47,0.3)",maxWidth:"520px",width:"100%",padding:"36px 32px",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
@@ -310,11 +259,10 @@ We'll get to the wardrobe. First, we figure out who we're dressing.
               <div style={{fontSize:"18px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal"}}>Client Summary</div>
               <div style={{fontSize:"11px",color:"rgba(255,255,255,0.3)",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"4px"}}>Prepared by Aunt Bettie · Mod Bettie Studio</div>
             </div>
-            {[{label:"Client Energy",key:"CLIENT ENERGY",accent:true},{label:"Emotional Anchors",key:"EMOTIONAL ANCHORS"},{label:"Session Prep Notes",key:"SESSION PREP NOTES"},{label:"Styling Notes",key:"STYLING NOTES"}].map(({label,key,accent})=>{
+            {[{label:"Client Energy",key:"CLIENT ENERGY",accent:true},{label:"Emotional Anchors",key:"EMOTIONAL ANCHORS"},{label:"Styling Lanes",key:"STYLING LANES"},{label:"Session Prep Notes",key:"SESSION PREP NOTES"},{label:"Wardrobe Notes",key:"WARDROBE NOTES"}].map(({label,key,accent})=>{
               const val = get(key);
               return val ? <div key={key} style={{marginBottom:"20px"}}><div style={{fontSize:"9px",letterSpacing:"3px",color:accent?"#c1622f":"rgba(255,255,255,0.3)",textTransform:"uppercase",marginBottom:"8px"}}>{label}</div><div style={{fontSize:"14px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.8",paddingLeft:"12px",borderLeft:`2px solid ${accent?"rgba(193,98,47,0.4)":"rgba(255,255,255,0.1)"}`}}>{val}</div></div> : null;
             })}
-            <div style={{marginTop:"24px",padding:"14px",background:"rgba(193,98,47,0.05)",border:"1px solid rgba(193,98,47,0.1)"}}><div style={{fontSize:"11px",color:"rgba(193,98,47,0.5)",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:"1.7",textAlign:"center"}}>This summary was generated from a client conversation with Aunt Bettie and is intended for studio use only.</div></div>
             <div style={{textAlign:"center",marginTop:"20px",fontSize:"9px",color:"rgba(255,255,255,0.1)",letterSpacing:"3px"}}>✦ modbettie.com ✦</div>
           </div>
         </div>
@@ -325,13 +273,13 @@ We'll get to the wardrobe. First, we figure out who we're dressing.
       const [messages, setMessages] = useState([{ role: "assistant", content: isReturning ? WELCOME_RETURNING : WELCOME }]);
       const [input, setInput] = useState("");
       const [loading, setLoading] = useState(false);
+      const [entered, setEntered] = useState(false);
       const [currentModule, setCurrentModule] = useState(1);
       const [showResults, setShowResults] = useState(false);
       const [showPhotog, setShowPhotog] = useState(false);
       const [summaryText, setSummaryText] = useState("");
       const [usedChoices, setUsedChoices] = useState(new Set());
       const [multiSelections, setMultiSelections] = useState({});
-      const [entered, setEntered] = useState(false);
       const bottomRef = useRef(null);
 
       useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
@@ -428,12 +376,25 @@ We'll get to the wardrobe. First, we figure out who we're dressing.
         </div>
       );
 
+      if (!entered) return (
+        <div style={{minHeight:"100vh",background:"#0d0d0d",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"Georgia,serif",padding:"40px 24px",textAlign:"center"}}>
+          <div style={{fontSize:"9px",letterSpacing:"5px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",marginBottom:"20px"}}>✦ Mod Bettie Studio ✦</div>
+          <div style={{fontSize:"clamp(32px,6vw,52px)",color:"#f0e6d8",fontWeight:"normal",marginBottom:"16px",lineHeight:"1.2"}}>Aunt Bettie's Closet</div>
+          <div style={{fontSize:"clamp(14px,2.5vw,18px)",color:"rgba(193,98,47,0.75)",fontStyle:"italic",marginBottom:"48px",maxWidth:"420px",lineHeight:"1.7"}}>She'll tell you to wear the damn stripes.</div>
+          <button onClick={()=>setEntered(true)}
+            style={{padding:"16px 40px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"12px",letterSpacing:"3px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px"}}>
+            Let's Begin →
+          </button>
+          <div style={{marginTop:"60px",fontSize:"11px",color:"rgba(255,255,255,0.12)",letterSpacing:"2px"}}>modbettie.com</div>
+        </div>
+      );
+
       return (
-        <div style={{minHeight:"100vh",background:"transparent",display:"flex",flexDirection:"column",alignItems:"center",fontFamily:"Georgia,serif"}}>
+        <div style={{minHeight:"100vh",background:"#0d0d0d",display:"flex",flexDirection:"column",alignItems:"center",fontFamily:"Georgia,serif"}}>
           {showResults && summaryText && <ResultsCard summary={summaryText} onClose={()=>setShowResults(false)}/>}
           {showPhotog && summaryText && <PhotographerSummary summary={summaryText} onClose={()=>setShowPhotog(false)}/>}
 
-          <div style={{width:"100%",padding:"10px 24px 0",borderBottom:"1px solid rgba(193,98,47,0.08)",background:"transparent",position:"sticky",top:0,zIndex:10}}>
+          <div style={{width:"100%",padding:"10px 24px 0",borderBottom:"1px solid rgba(193,98,47,0.08)",background:"rgba(13,13,13,0.95)",position:"sticky",top:0,zIndex:10}}>
             <ProgressBar/>
           </div>
 
