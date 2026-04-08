@@ -1,0 +1,393 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 import \{ useState, useRef, useEffect \} from "react";\
+\
+const MODULES = [\
+  \{ id: 1, name: "Arrival", symbol: "\uc0\u10022 " \},\
+  \{ id: 2, name: "Identity", symbol: "\uc0\u9678 " \},\
+  \{ id: 3, name: "Parts of Self", symbol: "\uc0\u9672 " \},\
+  \{ id: 4, name: "Body", symbol: "\uc0\u9671 " \},\
+  \{ id: 5, name: "Vision", symbol: "\uc0\u9673 " \},\
+  \{ id: 6, name: "Wardrobe", symbol: "\uc0\u10023 " \},\
+];\
+\
+const SYSTEM_PROMPT = `You are Aunt Bettie \'97 the warmhearted, wise, and deeply perceptive AI style guide for Mod Bettie, an empowerment portrait studio. You are NOT a styling bot. You are the aunt everyone wishes they had: the one who tells you the truth with love, who sees who you really are, and helps you show up fully for your photo session.\
+\
+Your core belief: clothing is not a costume for a fake self. Clothing is a bridge to a real part of self that wants more room.\
+\
+YOUR TONE: Warm, grounded, observant. Never clinical. Never "you go girl" sludge. Lightly poetic but always accessible. Occasionally dry and funny \'97 like a wise aunt who has seen some things. Short, direct sentences. Ash-like humor throughout.\
+\
+YOUR STRUCTURE \'97 6 modules in order, 2-3 questions each max, always acknowledge before advancing. Move briskly. Don't linger.\
+\
+CRITICAL RULES:\
+1. At the start of EVERY response, output on the very first line: [MODULE:X] where X is 1-6. For final summary use [MODULE:SUMMARY].\
+2. Whenever you offer choices, append at the very end: [CHOICES: option one | option two | option three] \'97 max 5 options, 1-6 words each.\
+3. Do NOT ask about session type in Module 1. Save it for later as a practical question.\
+\
+QUESTION LIBRARY:\
+\
+MODULE 1 \'97 ARRIVAL (2-3 questions, no session type):\
+Open with this exact question and choices:\
+"Before we talk about a single piece of clothing \'97 when you imagine seeing your final images for the first time, what do you want to feel?"\
+[CHOICES: Seen. Actually seen. | Terrifyingly beautiful | Soft and undeniable | Powerful in a quiet way | Free from the version everyone else knows]\
+\
+After they answer, pick whichever fits best:\
+"Be honest. Which one is more you right now?"\
+[CHOICES: I know exactly what I want but I'm scared to actually want it | I have no idea what I want and that's also terrifying | Somewhere in the middle pretending I have it together | More ready than I'm letting on]\
+\
+Then move to Module 2. Do NOT ask about session type yet.\
+\
+MODULE 2 \'97 IDENTITY (2-3 questions):\
+First acknowledge their Module 1 answer warmly, then ask:\
+"Which of these also live in the room with you right now? Pick all that feel true."\
+[CHOICES:MULTI: Proud | Vulnerable | Hopeful | Exposed | Brave | Tender | Uncertain | Inspired | Powerful | Ready]\
+\
+Then:\
+"The version of you showing up in these photos \'97 has she been waiting long?"\
+[CHOICES: Honestly, years | She shows up sometimes but never gets the mic | She's new. I'm still meeting her. | She's been here. I just needed permission.]\
+\
+Then ONE open question:\
+"What does she want the world to stop getting wrong about her?"\
+\
+Then optionally:\
+"This session is really about..."\
+[CHOICES: Celebrating who I already am | Reclaiming something I lost | Finally being visible | Marking a transition | Proving something to myself]\
+\
+MODULE 3 \'97 PARTS OF SELF (2 questions):\
+"Which parts of you are coming to this session?"\
+[CHOICES: The one who has it together | The one who's a lot | The soft one nobody sees | The sharp one people underestimate | The weird one I usually apologize for]\
+\
+"Which part picked the outfit the last time you felt really good?"\
+[CHOICES: The practical one, honestly | The bold one who surprised me | The soft one | The one I don't usually let out | I genuinely don't remember feeling that way]\
+\
+MODULE 4 \'97 BODY & SUPPORT (2 questions):\
+"What does your body need from clothing to feel like it's on your side?"\
+[CHOICES: Structure \'97 hold me together | Softness \'97 don't restrict me | Coverage \'97 I choose what's seen | Ease \'97 I need to forget I'm dressed | Drama \'97 I want to feel it when I move]\
+\
+"Any fabrics that feel like home?"\
+[CHOICES: Silk or satin | Cotton or linen | Knit or cashmere | Leather or denim | Lace or chiffon | I wear whatever doesn't itch]\
+\
+MODULE 5 \'97 VISUAL TRANSLATION (2 questions):\
+"If this version of you walked into a room, what would people feel before she said a word?"\
+[CHOICES: That she means it | That she's softer than she looks | That she's more than they expected | That she's arrived | That she's interesting and they can't say why]\
+\
+"She wears color like..."\
+[CHOICES: Punctuation \'97 one sharp pop | Poetry \'97 layered and soft | Armor \'97 dark and deliberate | Mystery \'97 deep and unexpected | Celebration \'97 seen from across the room]\
+\
+MODULE 6 \'97 WARDROBE REALITY (2 questions):\
+Ask session type here as a practical question:\
+"Quick practical question \'97 what kind of session are we actually dressing for?"\
+[CHOICES: Personal Branding | Boudoir | Beauty Portrait | Empowerment / Lifestyle | Mix & Match (you minx)]\
+\
+"Where are you starting from?"\
+[CHOICES: My closet has the bones, I need direction | I need to shop for at least one thing | Starting from scratch, send help | I have one piece I'm building around | No idea, that's why I'm here]\
+\
+"Last thing \'97 how dressed up are we talking?"\
+[CHOICES: Elevated but wearable | Full send, I want to look like a moment | Soft and intentional | Editorial. I want to be surprised by myself | Whatever Aunt Bettie thinks]\
+\
+NEVER: ask what to hide / body-shame / flood with questions / rush.\
+\
+FINAL SUMMARY \'97 use [MODULE:SUMMARY]:\
+\uc0\u10022  SESSION STYLE ESSENCE: (2-5 word poetic phrase)\
+\uc0\u10022  THE PARTS WE DRESSED FOR: (2-3 inner parts named)\
+\uc0\u10022  WARDROBE DIRECTION 1: [Name] \'97 description + visual cues\
+\uc0\u10022  WARDROBE DIRECTION 2: [Name] \'97 description + visual cues  \
+\uc0\u10022  WARDROBE DIRECTION 3: [Name] \'97 description + visual cues\
+\uc0\u10022  SHOPPING KEYWORDS: (5-8 specific searchable terms)\
+\uc0\u10022  BRING FROM YOUR CLOSET: (specific pieces)\
+\uc0\u10022  IMAGE CATEGORIES: (2-3 mood tags)\
+\uc0\u10022  A NOTE TO CARRY INTO YOUR SESSION: (personal, Aunt Bettie's voice)\
+---PHOTOGRAPHER SUMMARY---\
+\uc0\u10022  CLIENT ENERGY: (1-2 sentences)\
+\uc0\u10022  EMOTIONAL ANCHORS: (what this session means to client)\
+\uc0\u10022  SESSION PREP NOTES: (coaching notes for photographer)\
+\uc0\u10022  STYLING NOTES: (wardrobe summary for photographer)`;\
+\
+const WELCOME = `[MODULE:1]\
+\
+**Meet Your Aunt Bettie.**\
+\
+She's not here to ask what colors you "usually gravitate toward" and then pat herself on the back like she solved your soul in a cardigan.\
+\
+She's here to help you get honest about who's showing up for this session \'97 *and what that version of you wants to wear when she's done hiding in sensible fabric.*\
+\
+We'll get to the wardrobe. First, we figure out who we're dressing.\
+\
+**Before we talk about a single piece of clothing \'97 when you imagine seeing your final images for the first time, what do you want to feel?**\
+[CHOICES: Seen. Actually seen. | Terrifyingly beautiful | Soft and undeniable | Powerful in a quiet way | Free from the version everyone else knows]`;\
+\
+const MoonIcon = () => (\
+  <svg width="24" height="24" viewBox="0 0 28 28" fill="none">\
+    <circle cx="14" cy="14" r="11" stroke="#c1622f" strokeWidth="1.5" fill="none"/>\
+    <circle cx="14" cy="14" r="7" fill="#c1622f" opacity="0.15"/>\
+    <path d="M14 3 C8 3 3 8 3 14 C3 20 8 25 14 25 C11 22 9 18 9 14 C9 10 11 6 14 3Z" fill="#c1622f" opacity="0.3"/>\
+  </svg>\
+);\
+\
+const parseModule = (text) => \{\
+  const m = text.match(/^\\[MODULE:(\\w+)\\]/);\
+  return m ? m[1] : null;\
+\};\
+const stripModuleTag = (text) => text.replace(/^\\[MODULE:\\w+\\]\\n?/, "");\
+const parseChoices = (text) => \{\
+  const multiMatch = text.match(/\\[CHOICES:MULTI:\\s*([^\\]]+)\\]/);\
+  const singleMatch = text.match(/\\[CHOICES:\\s*([^\\]]+)\\]/);\
+  const match = multiMatch || singleMatch;\
+  if (!match) return \{ clean: text, choices: [], multi: false \};\
+  const choices = match[1].split("|").map(c => c.trim()).filter(Boolean);\
+  // Auto-detect multi if MULTI tag OR more than 6 options\
+  const multi = !!multiMatch || choices.length > 6;\
+  const clean = text.replace(/\\[CHOICES:(?:MULTI:)?\\s*[^\\]]+\\]/, "").trimEnd();\
+  return \{ clean, choices, multi \};\
+\};\
+\
+const ResultsCard = (\{ summary, onClose \}) => \{\
+  const lines = summary.split("\\n").filter(l => l.trim());\
+  const get = (key) => lines.find(l => l.includes(key))?.split(":").slice(1).join(":").trim() || "";\
+  const essence = get("SESSION STYLE ESSENCE");\
+  const parts = get("THE PARTS WE DRESSED FOR");\
+  const dirs = lines.filter(l => l.match(/WARDROBE DIRECTION \\d/)).map(l => l.split(":").slice(1).join(":").trim());\
+  const keywords = get("SHOPPING KEYWORDS");\
+  const closet = get("BRING FROM YOUR CLOSET");\
+  const note = get("A NOTE TO CARRY");\
+  const imgCats = get("IMAGE CATEGORIES");\
+\
+  return (\
+    <div style=\{\{position:"fixed",inset:0,background:"rgba(0,0,0,0.93)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",overflowY:"auto"\}\}>\
+      <div style=\{\{background:"#0a0604",border:"1px solid rgba(193,98,47,0.3)",maxWidth:"480px",width:"100%",padding:"36px 32px",position:"relative",maxHeight:"90vh",overflowY:"auto"\}\}>\
+        <button onClick=\{onClose\} style=\{\{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"rgba(193,98,47,0.5)",fontSize:"20px",cursor:"pointer"\}\}>\uc0\u10005 </button>\
+        <div style=\{\{textAlign:"center",marginBottom:"28px",paddingBottom:"20px",borderBottom:"1px solid rgba(193,98,47,0.15)"\}\}>\
+          <div style=\{\{fontSize:"9px",letterSpacing:"4px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"10px"\}\}>\uc0\u10022  Mod Bettie Studio \u10022 </div>\
+          <div style=\{\{fontSize:"22px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal",marginBottom:"4px"\}\}>Aunt Bettie's Closet</div>\
+          <div style=\{\{fontSize:"11px",color:"rgba(193,98,47,0.6)",fontStyle:"italic",fontFamily:"Georgia,serif"\}\}>Your Personal Wardrobe Ritual</div>\
+        </div>\
+        \{essence && <div style=\{\{textAlign:"center",marginBottom:"24px"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"8px"\}\}>Session Style Essence</div><div style=\{\{fontSize:"20px",color:"#c1622f",fontFamily:"Georgia,serif",fontStyle:"italic"\}\}>\{essence\}</div></div>\}\
+        \{parts && <div style=\{\{marginBottom:"20px",padding:"16px",background:"rgba(193,98,47,0.05)",border:"1px solid rgba(193,98,47,0.1)"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"8px"\}\}>The Parts We Dressed For</div><div style=\{\{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7"\}\}>\{parts\}</div></div>\}\
+        \{dirs.length > 0 && <div style=\{\{marginBottom:"20px"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"12px"\}\}>Wardrobe Directions</div>\{dirs.map((d,i)=><div key=\{i\} style=\{\{marginBottom:"10px",paddingLeft:"12px",borderLeft:"2px solid rgba(193,98,47,0.3)"\}\}><div style=\{\{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.6"\}\}>\{d\}</div></div>)\}</div>\}\
+        \{keywords && <div style=\{\{marginBottom:"20px"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"8px"\}\}>Shop These Keywords</div><div style=\{\{fontSize:"13px",color:"#c1622f",fontFamily:"Georgia,serif",fontStyle:"italic"\}\}>\{keywords\}</div></div>\}\
+        \{closet && <div style=\{\{marginBottom:"20px"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"8px"\}\}>Bring From Your Closet</div><div style=\{\{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.6"\}\}>\{closet\}</div></div>\}\
+        \{imgCats && <div style=\{\{marginBottom:"20px"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"8px"\}\}>Explore These Vibes</div><div style=\{\{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",fontStyle:"italic"\}\}>\{imgCats\}</div></div>\}\
+        \{note && <div style=\{\{marginTop:"24px",paddingTop:"20px",borderTop:"1px solid rgba(193,98,47,0.15)",textAlign:"center"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"10px"\}\}>A Note to Carry Into Your Session</div><div style=\{\{fontSize:"14px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:"1.8"\}\}>\{note\}</div></div>\}\
+        <div style=\{\{textAlign:"center",marginTop:"24px",fontSize:"9px",color:"rgba(193,98,47,0.25)",letterSpacing:"3px"\}\}>\uc0\u10022  modbettie.com \u10022 </div>\
+      </div>\
+    </div>\
+  );\
+\};\
+\
+const PhotographerSummary = (\{ summary, onClose \}) => \{\
+  const lines = summary.split("\\n").filter(l => l.trim());\
+  const idx = lines.findIndex(l => l.includes("---PHOTOGRAPHER SUMMARY---"));\
+  const photoLines = idx > -1 ? lines.slice(idx+1) : [];\
+  const get = (key) => photoLines.find(l => l.includes(key))?.split(":").slice(1).join(":").trim() || "";\
+  return (\
+    <div style=\{\{position:"fixed",inset:0,background:"rgba(0,0,0,0.93)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",overflowY:"auto"\}\}>\
+      <div style=\{\{background:"#080808",border:"1px solid rgba(255,255,255,0.1)",maxWidth:"480px",width:"100%",padding:"36px 32px",position:"relative",maxHeight:"90vh",overflowY:"auto"\}\}>\
+        <button onClick=\{onClose\} style=\{\{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:"20px",cursor:"pointer"\}\}>\uc0\u10005 </button>\
+        <div style=\{\{marginBottom:"24px",paddingBottom:"16px",borderBottom:"1px solid rgba(255,255,255,0.07)"\}\}>\
+          <div style=\{\{fontSize:"9px",letterSpacing:"4px",color:"rgba(255,255,255,0.25)",textTransform:"uppercase",marginBottom:"8px"\}\}>Photographer Session Brief</div>\
+          <div style=\{\{fontSize:"18px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal"\}\}>Client Summary</div>\
+          <div style=\{\{fontSize:"11px",color:"rgba(255,255,255,0.3)",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"4px"\}\}>Prepared by Aunt Bettie \'b7 Mod Bettie Studio</div>\
+        </div>\
+        \{[\{label:"Client Energy",key:"CLIENT ENERGY",accent:true\},\{label:"Emotional Anchors",key:"EMOTIONAL ANCHORS"\},\{label:"Session Prep Notes",key:"SESSION PREP NOTES"\},\{label:"Styling Notes",key:"STYLING NOTES"\}].map((\{label,key,accent\})=>\{\
+          const val = get(key);\
+          return val ? <div key=\{key\} style=\{\{marginBottom:"20px"\}\}><div style=\{\{fontSize:"9px",letterSpacing:"3px",color:accent?"#c1622f":"rgba(255,255,255,0.3)",textTransform:"uppercase",marginBottom:"8px"\}\}>\{label\}</div><div style=\{\{fontSize:"14px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.8",paddingLeft:"12px",borderLeft:`2px solid $\{accent?"rgba(193,98,47,0.4)":"rgba(255,255,255,0.1)"\}`\}\}>\{val\}</div></div> : null;\
+        \})\}\
+        <div style=\{\{marginTop:"24px",padding:"14px",background:"rgba(193,98,47,0.05)",border:"1px solid rgba(193,98,47,0.1)"\}\}><div style=\{\{fontSize:"11px",color:"rgba(193,98,47,0.5)",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:"1.7",textAlign:"center"\}\}>This summary was generated from a client conversation with Aunt Bettie and is intended for studio use only.</div></div>\
+        <div style=\{\{textAlign:"center",marginTop:"20px",fontSize:"9px",color:"rgba(255,255,255,0.1)",letterSpacing:"3px"\}\}>\uc0\u10022  modbettie.com \u10022 </div>\
+      </div>\
+    </div>\
+  );\
+\};\
+\
+export default function App() \{\
+  const [messages, setMessages] = useState([\{ role: "assistant", content: WELCOME \}]);\
+  const [input, setInput] = useState("");\
+  const [loading, setLoading] = useState(false);\
+  const [currentModule, setCurrentModule] = useState(1);\
+  const [showResults, setShowResults] = useState(false);\
+  const [showPhotog, setShowPhotog] = useState(false);\
+  const [summaryText, setSummaryText] = useState("");\
+  const [usedChoices, setUsedChoices] = useState(new Set());\
+  const [multiSelections, setMultiSelections] = useState(\{\});\
+  const bottomRef = useRef(null);\
+\
+  useEffect(() => \{ bottomRef.current?.scrollIntoView(\{ behavior: "smooth" \}); \}, [messages, loading]);\
+\
+  const sendMessage = async (text) => \{\
+    if (!text.trim() || loading) return;\
+    const updated = [...messages, \{ role: "user", content: text \}];\
+    setMessages(updated);\
+    setInput("");\
+    setLoading(true);\
+    try \{\
+      const res = await fetch("https://api.anthropic.com/v1/messages", \{\
+        method: "POST",\
+        headers: \{ "Content-Type": "application/json" \},\
+        body: JSON.stringify(\{\
+          model: "claude-sonnet-4-20250514",\
+          max_tokens: 1500,\
+          system: SYSTEM_PROMPT,\
+          messages: updated.map(m => (\{ role: m.role, content: stripModuleTag(m.content).replace(/\\[CHOICES:[^\\]]+\\]/g, "") \}))\
+        \})\
+      \});\
+      const data = await res.json();\
+      const reply = data.content?.[0]?.text || "Take your time, sweetheart. I'm right here.";\
+      const mod = parseModule(reply);\
+      if (mod === "SUMMARY") \{ setSummaryText(reply); setCurrentModule(7); \}\
+      else if (mod) setCurrentModule(parseInt(mod));\
+      setMessages(prev => [...prev, \{ role: "assistant", content: reply \}]);\
+    \} catch \{\
+      setMessages(prev => [...prev, \{ role: "assistant", content: "Something interrupted us \'97 please try again." \}]);\
+    \}\
+    setLoading(false);\
+  \};\
+\
+  const handleChoice = (choice, msgIndex) => \{\
+    const key = `$\{msgIndex\}-$\{choice\}`;\
+    if (usedChoices.has(key)) return;\
+    setUsedChoices(prev => new Set([...prev, key]));\
+    sendMessage(choice);\
+  \};\
+\
+  const handleKey = e => \{ if (e.key === "Enter" && !e.shiftKey) \{ e.preventDefault(); sendMessage(input); \} \};\
+\
+  const renderText = (text) => \{\
+    const clean = stripModuleTag(text).replace(/\\[CHOICES:[^\\]]+\\]/g, "").trimEnd();\
+    return clean.split("\\n").map((line, i) => \{\
+      if (line === "") return <div key=\{i\} style=\{\{ height: "0.4em" \}\} />;\
+      if (line.includes("---PHOTOGRAPHER SUMMARY---")) return null;\
+      if (line.trim() === "---") return null;\
+      if (line.match(/^\\[MODULE:\\w+\\]$/)) return null;\
+      const parts = line.split(/(\\*\\*[^*]+\\*\\*|\\*[^*]+\\*)/g).map((p, j) => \{\
+        if (p.startsWith("**") && p.endsWith("**")) return <strong key=\{j\}>\{p.slice(2,-2)\}</strong>;\
+        if (p.startsWith("*") && p.endsWith("*")) return <em key=\{j\}>\{p.slice(1,-1)\}</em>;\
+        return p;\
+      \});\
+      return <p key=\{i\} style=\{\{ margin: "0.2em 0", lineHeight: "1.75" \}\}>\{parts\}</p>;\
+    \});\
+  \};\
+\
+  const isSummary = currentModule === 7;\
+\
+  const ProgressBar = () => (\
+    <div style=\{\{width:"100%",padding:"12px 20px 0"\}\}>\
+      <div style=\{\{display:"flex",alignItems:"center"\}\}>\
+        \{MODULES.map((mod, i) => (\
+          <div key=\{mod.id\} style=\{\{flex:1,display:"flex",flexDirection:"column",alignItems:"center",position:"relative"\}\}>\
+            \{i < MODULES.length && <div style=\{\{position:"absolute",top:"8px",left:"50%",width:"100%",height:"1px",background:currentModule>mod.id?"rgba(193,98,47,0.5)":"rgba(255,255,255,0.2)",transition:"background 0.5s"\}\}/>\}\
+            <div style=\{\{width:"16px",height:"16px",borderRadius:"50%",background:currentModule>mod.id?"#c1622f":currentModule===mod.id?"rgba(193,98,47,0.3)":"rgba(255,255,255,0.06)",border:currentModule===mod.id?"1px solid #c1622f":currentModule>mod.id?"none":"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"7px",color:currentModule>mod.id?"#000":currentModule===mod.id?"#c1622f":"rgba(255,255,255,0.2)",zIndex:1,transition:"all 0.4s",flexShrink:0\}\}>\
+              \{currentModule>mod.id?"\uc0\u10003 ":mod.symbol\}\
+            </div>\
+            <div style=\{\{fontSize:"7px",color:currentModule===mod.id?"#c1622f":currentModule>mod.id?"rgba(193,98,47,0.7)":"rgba(255,255,255,0.4)",marginTop:"4px",textTransform:"uppercase",whiteSpace:"nowrap"\}\}>\{mod.name\}</div>\
+          </div>\
+        ))\}\
+        <div style=\{\{flex:1,display:"flex",flexDirection:"column",alignItems:"center"\}\}>\
+          <div style=\{\{width:"16px",height:"16px",borderRadius:"50%",background:isSummary?"#c1622f":"rgba(255,255,255,0.06)",border:isSummary?"none":"1px solid rgba(255,255,255,0.1)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"7px",color:isSummary?"#000":"rgba(255,255,255,0.15)",zIndex:1\}\}>\uc0\u10022 </div>\
+          <div style=\{\{fontSize:"7px",color:isSummary?"#c1622f":"rgba(255,255,255,0.4)",marginTop:"4px",textTransform:"uppercase"\}\}>Ritual</div>\
+        </div>\
+      </div>\
+    </div>\
+  );\
+\
+  return (\
+    <div style=\{\{minHeight:"100vh",background:"#0d0d0d",display:"flex",flexDirection:"column",alignItems:"center",fontFamily:"Georgia,serif"\}\}>\
+      \{showResults && summaryText && <ResultsCard summary=\{summaryText\} onClose=\{()=>setShowResults(false)\}/>\}\
+      \{showPhotog && summaryText && <PhotographerSummary summary=\{summaryText\} onClose=\{()=>setShowPhotog(false)\}/>\}\
+\
+      <div style=\{\{width:"100%",padding:"10px 24px 0",borderBottom:"1px solid rgba(193,98,47,0.08)",background:"transparent",position:"sticky",top:0,zIndex:10\}\}>\
+        <ProgressBar/>\
+      </div>\
+\
+      <div style=\{\{flex:1,width:"100%",maxWidth:"680px",padding:"28px 20px 16px",display:"flex",flexDirection:"column",gap:"22px"\}\}>\
+        \{messages.map((m, i) => \{\
+          const \{ clean, choices, multi \} = m.role === "assistant" ? parseChoices(m.content) : \{ clean: m.content, choices: [], multi: false \};\
+          const isLastAssistant = m.role === "assistant" && i === messages.length - 1;\
+          const showChoices = choices.length > 0 && (isLastAssistant || usedChoices.has(`$\{i\}-$\{choices[0]\}`));\
+          const choicesUsed = choices.length > 0 && usedChoices.has(`$\{i\}-$\{choices[0]\}`);\
+          return (\
+            <div key=\{i\}>\
+              <div style=\{\{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"\}\}>\
+                \{m.role==="assistant" && <div style=\{\{marginRight:"10px",marginTop:"4px",flexShrink:0,opacity:0.65\}\}><MoonIcon/></div>\}\
+                <div style=\{\{maxWidth:"82%",padding:"16px 20px",borderRadius:m.role==="user"?"20px 20px 4px 20px":"4px 20px 20px 20px",background:m.role==="user"?"linear-gradient(135deg,#c1622f,#8b3d1a)":"rgba(255,255,255,0.03)",border:m.role==="user"?"none":"1px solid rgba(193,98,47,0.09)",color:m.role==="user"?"#fdf0e6":"#e8ddd0",fontSize:"15px",lineHeight:"1.75"\}\}>\
+                  \{renderText(clean)\}\
+                </div>\
+              </div>\
+              \{showChoices && !multi && (\
+                <div style=\{\{display:"flex",flexWrap:"wrap",gap:"8px",marginTop:"10px",marginLeft:"34px"\}\}>\
+                  \{choices.map((choice, ci) => \{\
+                    const key = `$\{i\}-$\{choice\}`;\
+                    const used = usedChoices.has(key);\
+                    return (\
+                      <button key=\{ci\} onClick=\{()=>handleChoice(choice, i)\} disabled=\{choicesUsed\}\
+                        style=\{\{padding:"9px 16px",border:`1px solid $\{used?"rgba(193,98,47,0.6)":"rgba(193,98,47,0.25)"\}`,background:used?"rgba(193,98,47,0.15)":"transparent",color:used?"#c1622f":choicesUsed?"rgba(255,255,255,0.15)":"rgba(240,230,216,0.65)",fontSize:"13px",fontFamily:"Georgia,serif",fontStyle:"italic",cursor:choicesUsed?"default":"pointer",borderRadius:"30px",transition:"all 0.2s",opacity:choicesUsed&&!used?0.4:1\}\}>\
+                        \{choice\}\
+                      </button>\
+                    );\
+                  \})\}\
+                </div>\
+              )\}\
+              \{showChoices && multi && !usedChoices.has(`$\{i\}-done`) && (\
+                <div style=\{\{marginTop:"10px",marginLeft:"34px"\}\}>\
+                  <div style=\{\{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"\}\}>\
+                    \{choices.map((choice, ci) => \{\
+                      const selected = (multiSelections[i] || new Set()).has(choice);\
+                      return (\
+                        <button key=\{ci\} onClick=\{()=>toggleMulti(i, choice)\}\
+                          style=\{\{padding:"9px 16px",border:`1px solid $\{selected?"rgba(193,98,47,0.6)":"rgba(193,98,47,0.25)"\}`,background:selected?"rgba(193,98,47,0.15)":"transparent",color:selected?"#c1622f":"rgba(240,230,216,0.65)",fontSize:"13px",fontFamily:"Georgia,serif",fontStyle:"italic",cursor:"pointer",borderRadius:"30px",transition:"all 0.2s"\}\}>\
+                          \{choice\}\
+                        </button>\
+                      );\
+                    \})\}\
+                  </div>\
+                  <button onClick=\{()=>submitMulti(i)\}\
+                    disabled=\{!(multiSelections[i]?.size > 0)\}\
+                    style=\{\{padding:"10px 24px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.15)",color:"#c1622f",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px"\}\}>\
+                    That's me \uc0\u8594 \
+                  </button>\
+                </div>\
+              )\}\
+            </div>\
+          );\
+        \})\}\
+\
+        \{isSummary && (\
+          <div style=\{\{display:"flex",gap:"12px",justifyContent:"center",flexWrap:"wrap",padding:"8px 0"\}\}>\
+            <button onClick=\{()=>setShowResults(true)\} style=\{\{padding:"12px 24px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",borderRadius:"30px"\}\}>\uc0\u10022  View Your Style Card</button>\
+            <button onClick=\{()=>setShowPhotog(true)\} style=\{\{padding:"12px 24px",border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.03)",color:"rgba(255,255,255,0.4)",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",borderRadius:"30px"\}\}>Photographer Brief</button>\
+          </div>\
+        )\}\
+\
+        \{loading && (\
+          <div style=\{\{display:"flex",justifyContent:"flex-start",alignItems:"center",gap:"10px"\}\}>\
+            <div style=\{\{opacity:0.6\}\}><MoonIcon/></div>\
+            <div style=\{\{padding:"16px 20px",borderRadius:"4px 20px 20px 20px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(193,98,47,0.09)",display:"flex",gap:"7px",alignItems:"center"\}\}>\
+              \{[0,1,2].map(n=><div key=\{n\} style=\{\{width:"5px",height:"5px",borderRadius:"50%",background:"#c1622f",animation:"br 1.4s ease-in-out infinite",animationDelay:`$\{n*0.25\}s`\}\}/>)\}\
+            </div>\
+          </div>\
+        )\}\
+        <div ref=\{bottomRef\}/>\
+      </div>\
+\
+      <div style=\{\{width:"100%",maxWidth:"680px",borderTop:"1px solid rgba(193,98,47,0.07)"\}\}/>\
+      <div style=\{\{width:"100%",maxWidth:"680px",padding:"14px 20px 28px",display:"flex",gap:"10px",alignItems:"flex-end"\}\}>\
+        <textarea value=\{input\} onChange=\{e=>setInput(e.target.value)\} onKeyDown=\{handleKey\}\
+          placeholder="Or type your own answer\'85" rows=\{1\}\
+          style=\{\{flex:1,padding:"13px 16px",borderRadius:"14px",border:"1px solid rgba(193,98,47,0.18)",background:"rgba(255,255,255,0.03)",color:"#e8ddd0",fontSize:"15px",fontFamily:"Georgia,serif",resize:"none",outline:"none",lineHeight:"1.6"\}\}/>\
+        <button onClick=\{()=>sendMessage(input)\} disabled=\{loading||!input.trim()\} style=\{\{width:"44px",height:"44px",borderRadius:"50%",border:"1px solid rgba(193,98,47,0.3)",background:loading||!input.trim()?"transparent":"rgba(193,98,47,0.15)",color:loading||!input.trim()?"rgba(193,98,47,0.2)":"#c1622f",fontSize:"17px",cursor:loading||!input.trim()?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",flexShrink:0\}\}>\uc0\u8594 </button>\
+      </div>\
+\
+      <style>\{`\
+        @keyframes br\{0%,100%\{opacity:0.2;transform:scale(0.7)\}50%\{opacity:1;transform:scale(1.2)\}\}\
+        textarea::placeholder\{color:rgba(232,221,208,0.18)\}\
+        textarea:focus\{border-color:rgba(193,98,47,0.35)\}\
+        ::-webkit-scrollbar\{width:3px\}\
+        ::-webkit-scrollbar-thumb\{background:rgba(193,98,47,0.12)\}\
+      `\}</style>\
+    </div>\
+  );\
+\}}
