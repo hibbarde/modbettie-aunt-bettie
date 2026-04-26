@@ -298,6 +298,7 @@
       const fields = [
         {label:"Client Energy", key:"CLIENT ENERGY", accent:true},
         {label:"Emotional Anchors", key:"EMOTIONAL ANCHORS"},
+        {label:"Why Now", key:"WHY NOW", accent:true},
         {label:"Styling Lanes", key:"STYLING LANES TO PREP FOR"},
         {label:"Session Prep Notes", key:"SESSION PREP NOTES"},
         {label:"Wardrobe Notes", key:"WARDROBE NOTES"}
@@ -366,6 +367,7 @@
       const [summaryText, setSummaryText] = useState("");
       const [usedChoices, setUsedChoices] = useState(new Set());
       const [multiSelections, setMultiSelections] = useState({});
+      const [pendingChoices, setPendingChoices] = useState({});
       const bottomRef = useRef(null);
 
       useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
@@ -437,9 +439,14 @@
       };
 
       const handleChoice = (choice, msgIndex) => {
-        const key = `${msgIndex}-${choice}`;
-        if (usedChoices.has(key)) return;
-        setUsedChoices(prev => new Set([...prev, key]));
+        if (usedChoices.has(`${msgIndex}-done`)) return;
+        setPendingChoices(prev => ({ ...prev, [msgIndex]: choice }));
+      };
+
+      const submitSingle = (msgIndex) => {
+        const choice = pendingChoices[msgIndex];
+        if (!choice) return;
+        setUsedChoices(prev => new Set([...prev, `${msgIndex}-done`]));
         sendMessage(choice);
       };
 
@@ -499,7 +506,7 @@
             {messages.map((m, i) => {
               const { clean, choices, multi } = m.role === "assistant" ? parseChoices(m.content) : { clean: m.content, choices: [], multi: false };
               const isLastAssistant = m.role === "assistant" && i === messages.length - 1;
-              const choicesUsed = choices.length > 0 && (usedChoices.has(`${i}-${choices[0]}`) || usedChoices.has(`${i}-done`));
+              const choicesUsed = choices.length > 0 && usedChoices.has(`${i}-done`);
               const showChoices = choices.length > 0 && (isLastAssistant || choicesUsed);
               return (
                 <div key={i}>
@@ -510,13 +517,24 @@
                     </div>
                   </div>
                   {showChoices && !multi && !choicesUsed && (
-                    <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginTop:"10px",marginLeft:"34px"}}>
-                      {choices.map((choice, ci) => (
-                        <button key={ci} onClick={()=>handleChoice(choice, i)} disabled={choicesUsed}
-                          style={{padding:"9px 16px",border:"1px solid rgba(193,98,47,0.25)",background:"transparent",color:"rgba(240,230,216,0.65)",fontSize:"13px",fontFamily:"Georgia,serif",fontStyle:"italic",cursor:"pointer",borderRadius:"30px",transition:"all 0.2s"}}>
-                          {choice}
+                    <div style={{marginTop:"10px",marginLeft:"34px"}}>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
+                        {choices.map((choice, ci) => {
+                          const selected = pendingChoices[i] === choice;
+                          return (
+                            <button key={ci} onClick={() => handleChoice(choice, i)}
+                              style={{padding:"9px 16px",border:`1px solid ${selected?"rgba(193,98,47,0.6)":"rgba(193,98,47,0.25)"}`,background:selected?"rgba(193,98,47,0.15)":"transparent",color:selected?"#c1622f":"rgba(240,230,216,0.65)",fontSize:"13px",fontFamily:"Georgia,serif",fontStyle:"italic",cursor:"pointer",borderRadius:"30px",transition:"all 0.2s"}}>
+                              {choice}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {pendingChoices[i] && (
+                        <button onClick={() => submitSingle(i)}
+                          style={{padding:"10px 24px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.15)",color:"#c1622f",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px"}}>
+                          That's me →
                         </button>
-                      ))}
+                      )}
                     </div>
                   )}
                   {showChoices && multi && !usedChoices.has(`${i}-done`) && (
