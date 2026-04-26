@@ -47,30 +47,30 @@ MODULE 2 — SELF (4 questions):
 [CHOICES:MULTI: Branding presence | Soft portrait / beauty | Sensual / boudoir | Drama / gown / editorial | A little of everything]
 
 "The version of you showing up — has she been waiting long?"
-[CHOICES: Honestly, years | She shows up sometimes but never gets the mic | She's new. I'm still meeting her. | She's been here. I just needed permission.]
+[CHOICES:MULTI: Honestly, years | She shows up sometimes but never gets the mic | She's new. I'm still meeting her. | She's been here. I just needed permission.]
 
 "What does she want the world to stop getting wrong about her?"
-[CHOICES: That I'm only one thing | That I'm too much | That I'm not enough | That I'm fine when I'm not | That I don't take up space on purpose | That I'm easy to overlook | That I've already peaked | That I need to tone it down]
+[CHOICES:MULTI: That I'm only one thing | That I'm too much | That I'm not enough | That I'm fine when I'm not | That I don't take up space on purpose | That I'm easy to overlook | That I've already peaked | That I need to tone it down]
 
 "And what does this session actually mean to her?"
-[CHOICES: Permission to finally show up | Proof that I exist outside of what I do | Reclaiming something I lost | Celebrating who I'm becoming | Marking a transition | Proving something to myself]
+[CHOICES:MULTI: Permission to finally show up | Proof that I exist outside of what I do | Reclaiming something I lost | Celebrating who I'm becoming | Marking a transition | Proving something to myself]
 
 MODULE 3 — SUPPORT (2 questions):
 "What does your body need from clothing to feel like it's on your side?"
-[CHOICES: Structure — hold me together | Softness — don't restrict me | Coverage — I choose what's seen | Ease — I need to forget I'm dressed | Drama — I want to feel it when I move]
+[CHOICES:MULTI: Structure — hold me together | Softness — don't restrict me | Coverage — I choose what's seen | Ease — I need to forget I'm dressed | Drama — I want to feel it when I move]
 
 "Any fabrics that feel like home?"
 [CHOICES:MULTI: Silk or satin | Cotton or linen | Knit or cashmere | Leather or denim | Lace or chiffon | I wear whatever doesn't itch]
 
 MODULE 4 — STYLE (3 questions):
 "If this version of you walked into a room, what would people feel before she said a word?"
-[CHOICES: That she means it | That she's softer than she looks | That she's more than they expected | That she's arrived | That she's interesting and they can't say why]
+[CHOICES:MULTI: That she means it | That she's softer than she looks | That she's more than they expected | That she's arrived | That she's interesting and they can't say why]
 
 "She wears color like..."
-[CHOICES: Punctuation — one sharp pop | Poetry — layered and soft | Armor — dark and deliberate | Mystery — deep and unexpected | Celebration — seen from across the room]
+[CHOICES:MULTI: Punctuation — one sharp pop | Poetry — layered and soft | Armor — dark and deliberate | Mystery — deep and unexpected | Celebration — seen from across the room]
 
 "Her silhouette — which feels most true?"
-[CHOICES: Tailored and intentional | Fluid and moving | Fitted and present | Covered and powerful | Revealed and brave]
+[CHOICES:MULTI: Tailored and intentional | Fluid and moving | Fitted and present | Covered and powerful | Revealed and brave]
 
 MODULE 5 — CLOSET REALITY (3-4 questions):
 "Now let's get practical before we go full peacock."
@@ -82,7 +82,7 @@ MODULE 5 — CLOSET REALITY (3-4 questions):
 [CHOICES:MULTI: The jacket | The dress | The neckline | The shoes | The jewelry | The texture | The color]
 
 "What do you actually need from me here?"
-[CHOICES: Help me shop for one anchor piece | Help me build full outfits | Help me style what I already own | Help me split into multiple looks | All of the above, obviously]
+[CHOICES:MULTI: Help me shop for one anchor piece | Help me build full outfits | Help me style what I already own | Help me split into multiple looks | All of the above, obviously]
 
 If mixed session: "We're dressing for more than one mood. Which lanes do we need?"
 [CHOICES:MULTI: Polished / professional | Soft / beautiful | Sensual / skin-forward | Dramatic / editorial | Playful wildcard]
