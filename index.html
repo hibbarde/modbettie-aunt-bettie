@@ -38,7 +38,7 @@
       "We'll get to the wardrobe. First, we figure out who we're dressing.",
       "",
       "**Before we talk about a single piece of clothing — when you imagine seeing your final images for the first time, what do you want to feel?**",
-      "[CHOICES: Seen. Actually seen. | Terrifyingly beautiful | Soft and undeniable | Powerful in a quiet way | Free from the version everyone else knows]"
+      "[CHOICES:MULTI: Seen. Actually seen. | Terrifyingly beautiful | Soft and undeniable | Powerful in a quiet way | Free from the version everyone else knows]"
     ].join("\n");
 
     const WELCOME_RETURNING = [
@@ -57,29 +57,28 @@
     const parseModule = (text) => {
       const m = text.match(/\[MODULE:(\w+)\]/);
       if (m) return m[1];
-      // Backup: detect summary by content if tag was missing
       if (text.includes("SESSION STYLE ESSENCE") || text.includes("WHO WE'RE DRESSING")) return "SUMMARY";
       return null;
     };
+
     const stripModuleTag = (text) => text.replace(/^\[MODULE:\w+\]\n?/, "");
+
     const parseChoices = (text) => {
       const multiMatch = text.match(/\[CHOICES:MULTI:\s*([^\]]+)\]/);
       const singleMatch = text.match(/\[CHOICES:\s*([^\]]+)\]/);
       const match = multiMatch || singleMatch;
       if (!match) return { clean: text, choices: [], multi: false };
       const choices = match[1].split("|").map(c => c.trim()).filter(Boolean);
-      const multi = !!multiMatch || choices.length > 6;
+      const multi = !!multiMatch;
       const clean = text.replace(/\[CHOICES:(?:MULTI:)?\s*[^\]]+\]/, "").trimEnd();
       return { clean, choices, multi };
     };
 
-    // Parse [COLOR: Name #HEXCODE] tags
     const parseColors = (text) => {
       const matches = [...text.matchAll(/\[COLOR:\s*([^#\]]+?)\s*(#[A-Fa-f0-9]{6})\]/g)];
       return matches.map(m => ({ name: m[1].trim(), hex: m[2] }));
     };
 
-    // Strip color tags from display text
     const stripColorTags = (text) => text.replace(/\[COLOR:[^\]]+\]/g, "").trim();
 
     const MoonIcon = () => (
@@ -94,12 +93,7 @@
       <div style={{display:"flex",gap:"10px",flexWrap:"wrap",margin:"8px 0 12px"}}>
         {colors.map((c, i) => (
           <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"5px"}}>
-            <div style={{
-              width:"38px",height:"38px",borderRadius:"50%",
-              background:c.hex,
-              border:"2px solid rgba(255,255,255,0.08)",
-              boxShadow:`0 3px 12px ${c.hex}55, inset 0 1px 0 rgba(255,255,255,0.15)`
-            }}/>
+            <div style={{width:"38px",height:"38px",borderRadius:"50%",background:c.hex,border:"2px solid rgba(255,255,255,0.08)",boxShadow:`0 3px 12px ${c.hex}55`}}/>
             <div style={{fontSize:"8px",color:"rgba(240,230,216,0.45)",textAlign:"center",maxWidth:"46px",lineHeight:"1.2"}}>{c.name}</div>
           </div>
         ))}
@@ -124,7 +118,7 @@
           {fields.map(f => parsed[f] ? (
             <div key={f} style={{marginBottom:"7px",display:"flex",gap:"8px"}}>
               <div style={{fontSize:"8px",color:"rgba(193,98,47,0.45)",textTransform:"uppercase",letterSpacing:"1px",minWidth:"80px",paddingTop:"2px",flexShrink:0}}>{f}</div>
-              <div style={{fontSize:"12px",color:"#e0d4c5",fontFamily:"Georgia,serif",lineHeight:"1.5",fontStyle: f === "Emotional cue" ? "italic" : "normal"}}>{parsed[f]}</div>
+              <div style={{fontSize:"12px",color:"#e0d4c5",fontFamily:"Georgia,serif",lineHeight:"1.5",fontStyle:f==="Emotional cue"?"italic":"normal"}}>{parsed[f]}</div>
             </div>
           ) : null)}
         </div>
@@ -136,57 +130,46 @@
       const clientPart = clean.split("---PHOTOGRAPHER SUMMARY---")[0];
       const lines = clientPart.split("\n");
 
-      // Collect shot list lines per look
-      let inShotList = false;
-      let shotLines = [];
-      let renderedShotLists = {}; // keyed by look index
-      let lookCount = 0;
+      // Pre-pass: find shot list blocks
+      const shotBlocks = {};
+      let currentLook = -1;
+      let shotStart = null;
       lines.forEach((line, i) => {
+        if (line.startsWith("LOOK ") && line.includes("—")) currentLook++;
         if (line.trim().toLowerCase() === "shot list:") {
-          inShotList = true;
-          shotLines = [];
-          renderedShotLists[lookCount] = { startLine: i, lines: [] };
-          return;
+          shotStart = i;
+          shotBlocks[i] = { look: currentLook, lines: [] };
         }
-        if (inShotList) {
-          if (line.trim() === "" || (line.startsWith("LOOK ") && line.includes("—")) || line.startsWith("✦") || line.startsWith("PULL")) {
-            inShotList = false;
+        if (shotStart !== null && i > shotStart) {
+          if (line.trim() === "" || line.startsWith("LOOK ") || line.startsWith("✦") || line.startsWith("PULL") || line.startsWith("SHOP")) {
+            shotStart = null;
           } else {
-            if (renderedShotLists[lookCount]) renderedShotLists[lookCount].lines.push(line);
+            if (shotBlocks[shotStart]) shotBlocks[shotStart].lines.push(line);
           }
         }
-        if (line.startsWith("LOOK ") && line.includes("—")) lookCount++;
       });
 
-      const shotListStartLines = new Set(Object.values(renderedShotLists).map(v => v.startLine));
-      const shotListLineRanges = new Set();
-      Object.values(renderedShotLists).forEach(v => {
-        v.lines.forEach((_, offset) => shotListLineRanges.add(v.startLine + 1 + offset));
+      const shotListHeaders = new Set(Object.keys(shotBlocks).map(Number));
+      const shotListBodyLines = new Set();
+      Object.entries(shotBlocks).forEach(([startIdx, block]) => {
+        block.lines.forEach((_, offset) => shotListBodyLines.add(Number(startIdx) + 1 + offset));
       });
 
-      let currentLookIdx = -1;
       const rendered = [];
       let i = 0;
       while (i < lines.length) {
         const line = lines[i];
 
-        // Shot list block header
-        if (line.trim().toLowerCase() === "shot list:") {
-          const key = `shotlist-${i}`;
-          const lookKey = currentLookIdx;
-          const sl = renderedShotLists[lookKey];
-          rendered.push(<ShotListBlock key={key} lines={sl ? sl.lines : []}/>);
-          // Skip shot list content lines
-          i++;
-          while (i < lines.length && lines[i].match(/^\s+(Set|Light|Pose|Emotional|Key)/i)) i++;
-          continue;
+        if (shotListBodyLines.has(i)) { i++; continue; }
+
+        if (shotListHeaders.has(i)) {
+          rendered.push(<ShotListBlock key={`sl-${i}`} lines={shotBlocks[i].lines}/>);
+          i++; continue;
         }
 
         if (line.trim() === "") { rendered.push(<div key={i} style={{height:"0.5em"}}/>); i++; continue; }
 
-        // Look headers
         if (line.startsWith("LOOK ") && line.includes("—")) {
-          currentLookIdx++;
           rendered.push(
             <div key={i} style={{marginTop:"24px",marginBottom:"10px",padding:"10px 14px",background:"rgba(193,98,47,0.06)",border:"1px solid rgba(193,98,47,0.18)",borderRadius:"4px"}}>
               <div style={{fontSize:"10px",letterSpacing:"2px",color:"#c1622f",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"bold"}}>{line}</div>
@@ -195,11 +178,10 @@
           i++; continue;
         }
 
-        // Section headers with ✦
         if (line.startsWith("✦")) {
-          const parts = line.replace("✦","").split(":");
-          const label = parts[0].trim();
-          const val = parts.slice(1).join(":").trim();
+          const colonIdx = line.indexOf(":");
+          const label = colonIdx > 0 ? line.slice(1, colonIdx).trim() : line.slice(1).trim();
+          const val = colonIdx > 0 ? line.slice(colonIdx + 1).trim() : "";
           rendered.push(
             <div key={i} style={{marginTop:"18px",marginBottom:"6px"}}>
               <div style={{fontSize:"8px",letterSpacing:"3px",color:"rgba(193,98,47,0.55)",textTransform:"uppercase",marginBottom:"4px"}}>{label}</div>
@@ -209,31 +191,24 @@
           i++; continue;
         }
 
-        // Color lines
         const colors = parseColors(line);
         if (colors.length > 0) {
-          const displayLine = stripColorTags(line);
-          const label = displayLine.replace(/best colors:?/i,"").trim();
           rendered.push(
             <div key={i} style={{marginTop:"10px"}}>
-              <div style={{fontSize:"8px",letterSpacing:"2px",color:"rgba(193,98,47,0.45)",textTransform:"uppercase",marginBottom:"6px"}}>Best Colors {label && `— ${label}`}</div>
+              <div style={{fontSize:"8px",letterSpacing:"2px",color:"rgba(193,98,47,0.45)",textTransform:"uppercase",marginBottom:"6px"}}>Best Colors</div>
               <ColorSwatches colors={colors}/>
             </div>
           );
           i++; continue;
         }
 
-        // Bullet items
         if (line.startsWith("- ")) {
-          rendered.push(
-            <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7",paddingLeft:"12px"}}>· {line.slice(2)}</div>
-          );
+          rendered.push(<div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7",paddingLeft:"12px"}}>· {line.slice(2)}</div>);
           i++; continue;
         }
 
-        // Field labels (e.g. "What it's for:", "Outfit formula:")
         const colonIdx = line.indexOf(":");
-        if (colonIdx > 0 && colonIdx < 40 && !line.startsWith(" ")) {
+        if (colonIdx > 0 && colonIdx < 42 && !line.startsWith(" ") && !line.startsWith("http")) {
           const label = line.slice(0, colonIdx);
           const val = line.slice(colonIdx + 1).trim();
           rendered.push(
@@ -245,10 +220,7 @@
           i++; continue;
         }
 
-        // Regular text
-        rendered.push(
-          <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7"}}>{line}</div>
-        );
+        rendered.push(<div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7"}}>{line}</div>);
         i++;
       }
 
@@ -285,15 +257,14 @@
         return lines[idx].split(":").slice(1).join(":").trim();
       };
 
-      // Parse shot lists by look
       const shotLists = [];
       let currentLook = null;
       let inShots = false;
       lines.forEach(line => {
         if (line.includes("SHOT LISTS BY LOOK")) { inShots = true; return; }
         if (inShots) {
-          if (line.match(/^Look \d/i) || line.match(/^LOOK \d/i)) {
-            currentLook = { name: line.replace(/^Look \d+\s*[—-]\s*/i,"").replace(/^LOOK \d+\s*[—-]\s*/i,"").trim(), fields: [] };
+          if (line.match(/^Look \d/i)) {
+            currentLook = { name: line.replace(/^Look \d+\s*[—-]\s*/i,"").trim(), fields: [] };
             shotLists.push(currentLook);
           } else if (currentLook && line.trim() !== "") {
             currentLook.fields.push(line.trim());
@@ -316,10 +287,9 @@
             <button onClick={onClose} style={{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"rgba(255,255,255,0.25)",fontSize:"20px",cursor:"pointer"}}>✕</button>
             <div style={{marginBottom:"24px",paddingBottom:"16px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
               <div style={{fontSize:"8px",letterSpacing:"4px",color:"rgba(255,255,255,0.2)",textTransform:"uppercase",marginBottom:"8px"}}>Photographer Session Brief</div>
-              <div style={{fontSize:"20px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal"}}>Client Summary</div>
+              <div style={{fontSize:"20px",color:"#f0e6d8",fontFamily:"Georgia,serif"}}>Client Summary</div>
               <div style={{fontSize:"10px",color:"rgba(255,255,255,0.25)",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"4px"}}>Prepared by Aunt Bettie · Mod Bettie Studio</div>
             </div>
-
             {fields.map(({label, key, accent}) => {
               const val = getField(key);
               return val ? (
@@ -329,7 +299,6 @@
                 </div>
               ) : null;
             })}
-
             {shotLists.length > 0 && (
               <div style={{marginTop:"24px",paddingTop:"20px",borderTop:"1px solid rgba(255,255,255,0.06)"}}>
                 <div style={{fontSize:"8px",letterSpacing:"3px",color:"#c1622f",textTransform:"uppercase",marginBottom:"16px"}}>📸 Shot Lists by Look</div>
@@ -337,10 +306,10 @@
                   <div key={li} style={{marginBottom:"20px",padding:"16px",background:"rgba(193,98,47,0.04)",border:"1px solid rgba(193,98,47,0.1)",borderRadius:"4px"}}>
                     <div style={{fontSize:"9px",letterSpacing:"2px",color:"#c1622f",textTransform:"uppercase",marginBottom:"12px"}}>Look {li+1} — {look.name}</div>
                     {look.fields.map((f, fi) => {
-                      const colonIdx = f.indexOf(":");
-                      if (colonIdx < 0) return null;
-                      const fLabel = f.slice(0, colonIdx).trim();
-                      const fVal = f.slice(colonIdx + 1).trim();
+                      const ci = f.indexOf(":");
+                      if (ci < 0) return null;
+                      const fLabel = f.slice(0, ci).trim();
+                      const fVal = f.slice(ci + 1).trim();
                       return (
                         <div key={fi} style={{display:"flex",gap:"10px",marginBottom:"8px"}}>
                           <div style={{fontSize:"8px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",letterSpacing:"1px",minWidth:"88px",paddingTop:"2px",flexShrink:0}}>{fLabel}</div>
@@ -352,11 +321,9 @@
                 ))}
               </div>
             )}
-
             <div style={{marginTop:"24px",padding:"14px",background:"rgba(193,98,47,0.04)",border:"1px solid rgba(193,98,47,0.08)",borderRadius:"4px"}}>
               <div style={{fontSize:"10px",color:"rgba(193,98,47,0.4)",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:"1.7",textAlign:"center"}}>This summary was generated from a client conversation with Aunt Bettie and is intended for studio use only.</div>
             </div>
-            <div style={{textAlign:"center",marginTop:"20px",fontSize:"8px",color:"rgba(255,255,255,0.08)",letterSpacing:"3px"}}>✦ modbettie.com ✦</div>
           </div>
         </div>
       );
@@ -364,7 +331,7 @@
 
     function App() {
       const [entered, setEntered] = useState(window.location.search.includes("skip"));
-      const [messages, setMessages] = useState([{ role: "assistant", content: isReturning ? WELCOME_RETURNING : WELCOME }]);
+      const [messages, setMessages] = useState([{ role:"assistant", content: isReturning ? WELCOME_RETURNING : WELCOME }]);
       const [input, setInput] = useState("");
       const [loading, setLoading] = useState(false);
       const [currentModule, setCurrentModule] = useState(1);
@@ -376,19 +343,17 @@
       const [pendingChoices, setPendingChoices] = useState({});
       const bottomRef = useRef(null);
 
-      useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
+      useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages, loading]);
 
       if (!entered) return (
         <div style={{minHeight:"100vh",background:"#0d0d0d",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"Georgia,serif",padding:"40px 24px",textAlign:"center"}}>
           <div style={{fontSize:"8px",letterSpacing:"5px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",marginBottom:"20px"}}>✦ Mod Bettie Studio ✦</div>
           <div style={{fontSize:"clamp(32px,6vw,52px)",color:"#f0e6d8",fontWeight:"normal",marginBottom:"16px",lineHeight:"1.2"}}>Aunt Bettie's Closet</div>
           <div style={{fontSize:"clamp(14px,2.5vw,18px)",color:"rgba(193,98,47,0.75)",fontStyle:"italic",marginBottom:"48px",maxWidth:"420px",lineHeight:"1.7"}}>She'll tell you to wear the damn stripes.</div>
-          <button
-            onClick={() => setEntered(true)}
-            style={{padding:"16px 40px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"12px",letterSpacing:"3px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px",transition:"all 0.3s"}}
+          <button onClick={() => setEntered(true)}
+            style={{padding:"16px 40px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"12px",letterSpacing:"3px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px"}}
             onMouseOver={e => e.target.style.background="rgba(193,98,47,0.2)"}
-            onMouseOut={e => e.target.style.background="rgba(193,98,47,0.1)"}
-          >
+            onMouseOut={e => e.target.style.background="rgba(193,98,47,0.1)"}>
             Let's Begin →
           </button>
           <div style={{marginTop:"60px",fontSize:"10px",color:"rgba(255,255,255,0.12)",letterSpacing:"2px"}}>modbettie.com</div>
@@ -406,42 +371,8 @@
       const submitMulti = (msgIndex) => {
         const selected = multiSelections[msgIndex];
         if (!selected || selected.size === 0) return;
-        const text = Array.from(selected).join(", ");
         setUsedChoices(prev => new Set([...prev, `${msgIndex}-done`]));
-        sendMessage(text);
-      };
-
-      const sendMessage = async (text) => {
-        if (!text.trim() || loading) return;
-        const updated = [...messages, { role: "user", content: text }];
-        setMessages(updated);
-        setInput("");
-        setLoading(true);
-        try {
-          const res = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: "claude-sonnet-4-20250514",
-              max_tokens: 2000,
-              messages: updated.map(m => ({
-                role: m.role,
-                content: stripModuleTag(m.content)
-                  .replace(/\[CHOICES:(?:MULTI:)?[^\]]+\]/g, "")
-                  .replace(/\[COLOR:[^\]]+\]/g, "")
-              }))
-            })
-          });
-          const data = await res.json();
-          const reply = data.content?.[0]?.text || "Something interrupted us — please try again.";
-          const mod = parseModule(reply);
-          if (mod === "SUMMARY") { setSummaryText(reply); setCurrentModule(7); }
-          else if (mod) setCurrentModule(parseInt(mod));
-          setMessages(prev => [...prev, { role: "assistant", content: reply }]);
-        } catch(e) {
-          setMessages(prev => [...prev, { role: "assistant", content: "[RETRY]" }]);
-        }
-        setLoading(false);
+        sendMessage(Array.from(selected).join(", "));
       };
 
       const handleChoice = (choice, msgIndex) => {
@@ -456,6 +387,46 @@
         sendMessage(choice);
       };
 
+      const sendMessage = async (text) => {
+        if (!text.trim() || loading) return;
+        const updated = [...messages, { role:"user", content: text }];
+        setMessages(updated);
+        setInput("");
+        setLoading(true);
+        try {
+          const res = await fetch("/api/chat", {
+            method:"POST",
+            headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({
+              model:"claude-sonnet-4-20250514",
+              max_tokens: 2000,
+              messages: updated.map(m => ({
+                role: m.role,
+                content: stripModuleTag(m.content)
+                  .replace(/\[CHOICES:(?:MULTI:)?[^\]]+\]/g, "")
+                  .replace(/\[COLOR:[^\]]+\]/g, "")
+              }))
+            })
+          });
+          const data = await res.json();
+          const reply = data.content?.[0]?.text || "Something interrupted us — please try again.";
+          const mod = parseModule(reply);
+          if (mod === "SUMMARY") { setSummaryText(reply); setCurrentModule(7); }
+          else if (mod) setCurrentModule(parseInt(mod));
+          setMessages(prev => [...prev, { role:"assistant", content: reply }]);
+        } catch(e) {
+          setMessages(prev => [...prev, { role:"assistant", content:"Something interrupted us — please try again." }]);
+        }
+        setLoading(false);
+      };
+
+      const retryLast = () => {
+        const lastUser = [...messages].reverse().find(m => m.role === "user");
+        if (!lastUser) return;
+        setMessages(prev => prev.slice(0, -1));
+        sendMessage(lastUser.content);
+      };
+
       const handleKey = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); } };
 
       const renderText = (text) => {
@@ -464,16 +435,14 @@
           .replace(/\[COLOR:[^\]]+\]/g, "")
           .trimEnd();
         return clean.split("\n").map((line, i) => {
-          if (line === "") return <div key={i} style={{ height: "0.4em" }} />;
-          if (line.includes("---PHOTOGRAPHER SUMMARY---")) return null;
-          if (line.trim() === "---") return null;
-          if (line.match(/^\[MODULE:\w+\]$/)) return null;
+          if (line === "") return <div key={i} style={{height:"0.4em"}}/>;
+          if (line.includes("---PHOTOGRAPHER SUMMARY---") || line.trim() === "---" || line.match(/^\[MODULE:\w+\]$/)) return null;
           const parts = line.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((p, j) => {
             if (p.startsWith("**") && p.endsWith("**")) return <strong key={j}>{p.slice(2,-2)}</strong>;
             if (p.startsWith("*") && p.endsWith("*")) return <em key={j}>{p.slice(1,-1)}</em>;
             return p;
           });
-          return <p key={i} style={{ margin: "0.2em 0", lineHeight: "1.75" }}>{parts}</p>;
+          return <p key={i} style={{margin:"0.2em 0",lineHeight:"1.75"}}>{parts}</p>;
         });
       };
 
@@ -510,35 +479,30 @@
 
           <div style={{flex:1,width:"100%",maxWidth:"680px",padding:"28px 20px 16px",display:"flex",flexDirection:"column",gap:"22px"}}>
             {messages.map((m, i) => {
-              const { clean, choices, multi } = m.role === "assistant" ? parseChoices(m.content) : { clean: m.content, choices: [], multi: false };
+              const isRetry = m.role === "assistant" && m.content === "Something interrupted us — please try again.";
+              const { clean, choices, multi } = m.role === "assistant" ? parseChoices(m.content) : { clean: m.content, choices:[], multi:false };
               const isLastAssistant = m.role === "assistant" && i === messages.length - 1;
-              const choicesUsed = choices.length > 0 && usedChoices.has(`${i}-done`);
+              const choicesUsed = usedChoices.has(`${i}-done`);
               const showChoices = choices.length > 0 && (isLastAssistant || choicesUsed);
+
               return (
                 <div key={i}>
-                  {m.role === "assistant" && m.content === "[RETRY]" ? (
-                    <div style={{display:"flex",justifyContent:"flex-start"}}>
-                      <div style={{marginRight:"10px",marginTop:"4px",flexShrink:0,opacity:0.65}}><MoonIcon/></div>
-                      <div style={{padding:"16px 20px",borderRadius:"4px 20px 20px 20px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(193,98,47,0.09)",display:"flex",flexDirection:"column",gap:"12px"}}>
-                        <div style={{fontSize:"14px",color:"rgba(240,230,216,0.5)",fontStyle:"italic"}}>Something interrupted us.</div>
-                        <button onClick={() => {
-                          const lastUser = [...messages].reverse().find(m => m.role === "user");
-                          if (lastUser) {
-                            setMessages(prev => prev.slice(0,-1));
-                            sendMessage(lastUser.content);
-                          }
-                        }} style={{padding:"9px 20px",border:"1px solid rgba(193,98,47,0.4)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px",width:"fit-content"}}>
-                          Try again →
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
+                  <div style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
                     {m.role==="assistant" && <div style={{marginRight:"10px",marginTop:"4px",flexShrink:0,opacity:0.65}}><MoonIcon/></div>}
                     <div style={{maxWidth:"82%",padding:"16px 20px",borderRadius:m.role==="user"?"20px 20px 4px 20px":"4px 20px 20px 20px",background:m.role==="user"?"linear-gradient(135deg,#c1622f,#8b3d1a)":"rgba(255,255,255,0.03)",border:m.role==="user"?"none":"1px solid rgba(193,98,47,0.09)",color:m.role==="user"?"#fdf0e6":"#e8ddd0",fontSize:"15px",lineHeight:"1.75"}}>
                       {renderText(clean)}
                     </div>
                   </div>
-                  {showChoices && !multi && !choicesUsed && (
+
+                  {isRetry && isLastAssistant && (
+                    <div style={{marginTop:"10px",marginLeft:"34px"}}>
+                      <button onClick={retryLast} style={{padding:"9px 20px",border:"1px solid rgba(193,98,47,0.4)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px"}}>
+                        Try again →
+                      </button>
+                    </div>
+                  )}
+
+                  {!isRetry && showChoices && !multi && !choicesUsed && (
                     <div style={{marginTop:"10px",marginLeft:"34px"}}>
                       <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
                         {choices.map((choice, ci) => {
@@ -559,20 +523,21 @@
                       )}
                     </div>
                   )}
-                  {showChoices && multi && !usedChoices.has(`${i}-done`) && (
+
+                  {!isRetry && showChoices && multi && !choicesUsed && (
                     <div style={{marginTop:"10px",marginLeft:"34px"}}>
                       <div style={{display:"flex",flexWrap:"wrap",gap:"8px",marginBottom:"12px"}}>
                         {choices.map((choice, ci) => {
                           const selected = (multiSelections[i] || new Set()).has(choice);
                           return (
-                            <button key={ci} onClick={()=>toggleMulti(i, choice)}
+                            <button key={ci} onClick={() => toggleMulti(i, choice)}
                               style={{padding:"9px 16px",border:`1px solid ${selected?"rgba(193,98,47,0.6)":"rgba(193,98,47,0.25)"}`,background:selected?"rgba(193,98,47,0.15)":"transparent",color:selected?"#c1622f":"rgba(240,230,216,0.65)",fontSize:"13px",fontFamily:"Georgia,serif",fontStyle:"italic",cursor:"pointer",borderRadius:"30px",transition:"all 0.2s"}}>
                               {choice}
                             </button>
                           );
                         })}
                       </div>
-                      <button onClick={()=>submitMulti(i)} disabled={!(multiSelections[i]?.size > 0)}
+                      <button onClick={() => submitMulti(i)} disabled={!(multiSelections[i]?.size > 0)}
                         style={{padding:"10px 24px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.15)",color:"#c1622f",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px"}}>
                         That's me →
                       </button>
@@ -584,8 +549,8 @@
 
             {isSummary && (
               <div style={{display:"flex",gap:"12px",justifyContent:"center",flexWrap:"wrap",padding:"8px 0"}}>
-                <button onClick={()=>setShowResults(true)} style={{padding:"12px 24px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",borderRadius:"30px"}}>✦ View Your Style Card</button>
-                <button onClick={()=>setShowPhotog(true)} style={{padding:"12px 24px",border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.03)",color:"rgba(255,255,255,0.4)",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",borderRadius:"30px"}}>Photographer Brief</button>
+                <button onClick={() => setShowResults(true)} style={{padding:"12px 24px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",borderRadius:"30px"}}>✦ View Your Style Card</button>
+                <button onClick={() => setShowPhotog(true)} style={{padding:"12px 24px",border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.03)",color:"rgba(255,255,255,0.4)",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",cursor:"pointer",fontFamily:"Georgia,serif",borderRadius:"30px"}}>Photographer Brief</button>
               </div>
             )}
 
@@ -593,7 +558,7 @@
               <div style={{display:"flex",justifyContent:"flex-start",alignItems:"center",gap:"10px"}}>
                 <div style={{opacity:0.6}}><MoonIcon/></div>
                 <div style={{padding:"16px 20px",borderRadius:"4px 20px 20px 20px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(193,98,47,0.09)",display:"flex",gap:"7px",alignItems:"center"}}>
-                  {[0,1,2].map(n=><div key={n} style={{width:"5px",height:"5px",borderRadius:"50%",background:"#c1622f",animation:"br 1.4s ease-in-out infinite",animationDelay:`${n*0.25}s`}}/>)}
+                  {[0,1,2].map(n => <div key={n} style={{width:"5px",height:"5px",borderRadius:"50%",background:"#c1622f",animation:"br 1.4s ease-in-out infinite",animationDelay:`${n*0.25}s`}}/>)}
                 </div>
               </div>
             )}
@@ -602,11 +567,11 @@
 
           <div style={{width:"100%",maxWidth:"680px",borderTop:"1px solid rgba(193,98,47,0.07)"}}/>
           <div style={{width:"100%",maxWidth:"680px",padding:"14px 20px 28px",display:"flex",gap:"10px",alignItems:"flex-end"}}>
-            <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={handleKey}
+            <textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey}
               placeholder="Or type your own answer…" rows={1}
               style={{flex:1,padding:"13px 16px",borderRadius:"14px",border:"1px solid rgba(193,98,47,0.18)",background:"rgba(255,255,255,0.03)",color:"#e8ddd0",fontSize:"15px",fontFamily:"Georgia,serif",resize:"none",outline:"none",lineHeight:"1.6"}}/>
-            <button onClick={()=>sendMessage(input)} disabled={loading||!input.trim()}
-              style={{width:"44px",height:"44px",borderRadius:"50%",border:"1px solid rgba(193,98,47,0.3)",background:loading||!input.trim()?"transparent":"rgba(193,98,47,0.15)",color:loading||!input.trim()?"rgba(193,98,47,0.2)":"#c1622f",fontSize:"17px",cursor:loading||!input.trim()?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 0.2s",flexShrink:0}}>→</button>
+            <button onClick={() => sendMessage(input)} disabled={loading||!input.trim()}
+              style={{width:"44px",height:"44px",borderRadius:"50%",border:"1px solid rgba(193,98,47,0.3)",background:loading||!input.trim()?"transparent":"rgba(193,98,47,0.15)",color:loading||!input.trim()?"rgba(193,98,47,0.2)":"#c1622f",fontSize:"17px",cursor:loading||!input.trim()?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>→</button>
           </div>
 
           <style>{`
