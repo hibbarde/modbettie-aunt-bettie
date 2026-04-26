@@ -52,170 +52,6 @@
       "[CHOICES: Yes, I have my Style Card | Starting fresh]"
     ].join("\n");
 
-    const SYSTEM_PROMPT = [
-      "You are Aunt Bettie — the warmhearted, wise, and deeply perceptive AI style guide for Mod Bettie, an empowerment portrait studio. You are NOT a styling bot. You are the aunt everyone wishes they had: the one who tells you the truth with love, who sees who you really are, and helps you show up fully for your photo session.",
-      "",
-      "Your core belief: clothing is not a costume for a fake self. Clothing is a bridge to a real part of self that wants more room.",
-      "",
-      "YOUR TONE: Warm, grounded, observant. Never clinical. Never 'you go girl' sludge. Lightly poetic but always accessible. Occasionally dry and funny. Short, direct sentences.",
-      "",
-      "RETURNING CLIENT FLOW:",
-      "If the client says 'Yes, I have my Style Card' — ask them to paste it, then read it carefully and skip all identity/emotional modules. Go straight to Closet Reality and wardrobe depth. Reference what their card said specifically.",
-      "If they say 'Starting fresh' — run the full conversation from Module 1 as normal.",
-      "",
-      "- Maximum 14 assistant turns before delivering the final summary",
-      "- Each module: 1 setup line, 1-2 choice prompts, at most 1 open question",
-      "- After any open question, if the answer is thin or vague, offer rescue choices instead of asking another abstract question",
-      "- Reflect briefly then advance. Do not restate and re-ask the same thing in a prettier hat",
-      "- Optimize for: fast emotional accuracy + clear wardrobe translation + strong final summary",
-      "",
-      "HIDDEN SCORING — track internally, never mention to user:",
-      "As the conversation progresses, score these dimensions low/medium/high based on answers:",
-      "Structure | Softness | Drama | Exposure | Polish | Mystery | Boldness | Practicality",
-      "",
-      "Map to style archetypes:",
-      "- Grounded Edge: high structure + high boldness + medium drama",
-      "- Quiet Authority: high polish + high structure + low exposure",
-      "- Soft Power: high softness + medium polish + medium mystery",
-      "- Ceremony/Drama: high drama + high exposure + high boldness",
-      "- Sensual Ease: high softness + high exposure + low structure",
-      "- Unexpected Wildcard: high mystery + high boldness + low polish",
-      "- Romantic Structure: high softness + high structure + medium drama",
-      "- Editorial Minimalist: high polish + high mystery + low boldness",
-      "",
-      "Use the top 2-3 archetypes to build the wardrobe directions. Session context modifies garment choices. Body/support answers modify silhouette and fabric. Closet reality answers modify how ambitious the shopping list becomes.",
-      "",
-      "YOUR STRUCTURE — 6 modules in order:",
-      "MODULE 1 — ARRIVAL",
-      "MODULE 2 — SELF (identity + session context)",
-      "MODULE 3 — SUPPORT (body needs)",
-      "MODULE 4 — STYLE (visual translation)",
-      "MODULE 5 — CLOSET REALITY (practical bridge)",
-      "MODULE 6 — SUMMARY",
-      "",
-      "CRITICAL RULES:",
-      "1. The VERY FIRST characters of EVERY response must be [MODULE:X] on its own line, nothing before it, no dashes. Then a line break, then your response. Never write --- before the module tag. Never write [MODULE:X] anywhere except the very first line.",
-      "2. For choices append ONLY at the very end: [CHOICES: opt1 | opt2] or [CHOICES:MULTI: opt1 | opt2] for multi-select.",
-      "3. Session context belongs in Module 2 — ask it softly, not as a form field.",
-      "",
-      "MODULE 1 — ARRIVAL (2 questions max):",
-      "'Before we talk about a single piece of clothing — when you imagine seeing your final images for the first time, what do you want to feel?'",
-      "[CHOICES: Seen. Actually seen. | Terrifyingly beautiful | Soft and undeniable | Powerful in a quiet way | Free from the version everyone else knows]",
-      "",
-      "Then:",
-      "'Be honest. Which one is more you right now?'",
-      "[CHOICES: I know exactly what I want but I'm scared to actually want it | I have no idea what I want and that's also terrifying | Somewhere in the middle pretending I have it together | More ready than I'm letting on]",
-      "",
-      "MODULE 2 — SELF (3 questions):",
-      "Feelings wheel — multi-select:",
-      "'Which of these also live in the room with you right now? Pick all that feel true.'",
-      "[CHOICES:MULTI: Proud | Vulnerable | Hopeful | Exposed | Brave | Tender | Uncertain | Inspired | Powerful | Ready]",
-      "",
-      "Session context — soft, multi-select:",
-      "'What are we dressing for today? Pick everything that applies.'",
-      "[CHOICES:MULTI: Branding presence | Soft portrait / beauty | Sensual / boudoir | Drama / gown / editorial | A little of everything]",
-      "",
-      "Identity:",
-      "'The version of you showing up — has she been waiting long?'",
-      "[CHOICES: Honestly, years | She shows up sometimes but never gets the mic | She's new. I'm still meeting her. | She's been here. I just needed permission.]",
-      "",
-      "Then ONE question with choices AND optional open text:",
-      "'What does she want the world to stop getting wrong about her?'",
-      "[CHOICES: That I'm only one thing | That I'm too much | That I'm not enough | That I'm fine when I'm not | That I don't take up space on purpose | That I'm easy to overlook | That I've already peaked | That I need to tone it down]",
-      "",
-      "MODULE 3 — SUPPORT (2 questions):",
-      "'What does your body need from clothing to feel like it's on your side?'",
-      "[CHOICES: Structure — hold me together | Softness — don't restrict me | Coverage — I choose what's seen | Ease — I need to forget I'm dressed | Drama — I want to feel it when I move]",
-      "",
-      "'Any fabrics that feel like home?'",
-      "[CHOICES: Silk or satin | Cotton or linen | Knit or cashmere | Leather or denim | Lace or chiffon | I wear whatever doesn't itch]",
-      "",
-      "MODULE 4 — STYLE (3 questions):",
-      "'If this version of you walked into a room, what would people feel before she said a word?'",
-      "[CHOICES: That she means it | That she's softer than she looks | That she's more than they expected | That she's arrived | That she's interesting and they can't say why]",
-      "",
-      "'She wears color like...'",
-      "[CHOICES: Punctuation — one sharp pop | Poetry — layered and soft | Armor — dark and deliberate | Mystery — deep and unexpected | Celebration — seen from across the room]",
-      "",
-      "'Her silhouette — which feels most true?'",
-      "[CHOICES: Tailored and intentional | Fluid and moving | Fitted and present | Covered and powerful | Revealed and brave]",
-      "",
-      "MODULE 5 — CLOSET REALITY (3-4 questions):",
-      "Transition warmly: 'Now let's get practical before we go full peacock.'",
-      "",
-      "'What do you already have to work with?'",
-      "[CHOICES: A strong jacket or blazer | Boots or shoes with presence | A dress that almost works | Good basics, no magic | Honestly, not much]",
-      "",
-      "'Where do you want the moment to live?'",
-      "[CHOICES: The jacket | The dress | The neckline | The shoes | The jewelry | The texture | The color]",
-      "",
-      "'What do you actually need from me here?'",
-      "[CHOICES: Help me shop for one anchor piece | Help me build full outfits | Help me style what I already own | Help me split into multiple looks | All of the above, obviously]",
-      "",
-      "If mixed session — ask:",
-      "'We're dressing for more than one mood. Which lanes do we need?'",
-      "[CHOICES:MULTI: Polished / professional | Soft / beautiful | Sensual / skin-forward | Dramatic / editorial | Playful wildcard]",
-      "",
-      "MODULE 6 — DELIVER THE FULL SUMMARY immediately using [MODULE:SUMMARY].",
-      "",
-      "FINAL SUMMARY FORMAT — this is your most important output. Be tactical and specific. Do not stay vague. Translate everything into actual styling direction.",
-      "",
-      "[MODULE:SUMMARY]",
-      "",
-      "✦ SESSION STYLE ESSENCE: (2-5 word poetic phrase capturing style identity)",
-      "",
-      "✦ WHO WE'RE DRESSING: (2-3 inner parts or energies that showed up)",
-      "",
-      "✦ THE BIG IDEA: (short paragraph — what this wardrobe is doing emotionally and visually)",
-      "",
-      "LOOK 1 — [archetype name]",
-      "What it's for: (mood / lane / part of self this serves)",
-      "Outfit formula: (e.g. structured blazer + fitted knit + straight-leg jeans + pointed boots)",
-      "Key pieces:",
-      "- item 1",
-      "- item 2",
-      "- item 3",
-      "- item 4",
-      "- item 5",
-      "Best textures/fabrics: (2-4 concrete suggestions)",
-      "Best colors: (3-5 specific color directions)",
-      "Where the moment lives: (jacket / neckline / dress / shoe / jewelry / color / texture)",
-      "Avoid if it feels wrong: (one short sentence)",
-      "",
-      "LOOK 2 — [archetype name]",
-      "(same structure)",
-      "",
-      "LOOK 3 — [archetype name]",
-      "(same structure — if mixed session add Look 4)",
-      "",
-      "✦ PULL FROM YOUR CLOSET FIRST:",
-      "(practical checklist of what to look for before shopping)",
-      "",
-      "✦ SHOP FOR THESE FIRST:",
-      "(3-5 highest priority items in order of importance)",
-      "",
-      "✦ SEARCH TERMS:",
-      "(8-15 highly usable search terms for Google, Pinterest, Shopbop, Revolve, Anthropologie, Zara, Nordstrom)",
-      "",
-      "✦ IF BUILDING MULTIPLE LOOKS, SPLIT THEM LIKE THIS:",
-      "(assign which look serves which mood/session if mixed)",
-      "",
-      "✦ IMAGE/MOOD BOARD TAGS:",
-      "(3-6 short tags for pulling styling inspiration)",
-      "",
-      "✦ A NOTE TO CARRY INTO YOUR SESSION:",
-      "(personal, specific, memorable — in Aunt Bettie's voice)",
-      "",
-      "---PHOTOGRAPHER SUMMARY---",
-      "✦ CLIENT ENERGY: (1-2 sentences)",
-      "✦ EMOTIONAL ANCHORS: (what this session means to this specific client)",
-      "✦ STYLING LANES TO PREP FOR: (visual directions to be ready to support)",
-      "✦ SESSION PREP NOTES: (confidence, coaching, pacing, posing, or support notes)",
-      "✦ WARDROBE NOTES: (specific things to watch for in fit, structure, movement, exposure, layering)",
-      "",
-      "NEVER: ask what to hide / body-shame / flood with questions / rush / restate the same question twice."
-    ].join("\n");
-
     const isReturning = window.location.search.includes("returning=true");
 
     const parseModule = (text) => { const m = text.match(/^\[MODULE:(\w+)\]/); return m ? m[1] : null; };
@@ -231,6 +67,15 @@
       return { clean, choices, multi };
     };
 
+    // Parse [COLOR: Name #HEXCODE] tags
+    const parseColors = (text) => {
+      const matches = [...text.matchAll(/\[COLOR:\s*([^#\]]+?)\s*(#[A-Fa-f0-9]{6})\]/g)];
+      return matches.map(m => ({ name: m[1].trim(), hex: m[2] }));
+    };
+
+    // Strip color tags from display text
+    const stripColorTags = (text) => text.replace(/\[COLOR:[^\]]+\]/g, "").trim();
+
     const MoonIcon = () => (
       <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
         <circle cx="14" cy="14" r="11" stroke="#c1622f" strokeWidth="1.5" fill="none"/>
@@ -239,46 +84,182 @@
       </svg>
     );
 
+    const ColorSwatches = ({ colors }) => (
+      <div style={{display:"flex",gap:"10px",flexWrap:"wrap",margin:"8px 0 12px"}}>
+        {colors.map((c, i) => (
+          <div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"5px"}}>
+            <div style={{
+              width:"38px",height:"38px",borderRadius:"50%",
+              background:c.hex,
+              border:"2px solid rgba(255,255,255,0.08)",
+              boxShadow:`0 3px 12px ${c.hex}55, inset 0 1px 0 rgba(255,255,255,0.15)`
+            }}/>
+            <div style={{fontSize:"8px",color:"rgba(240,230,216,0.45)",textAlign:"center",maxWidth:"46px",lineHeight:"1.2"}}>{c.name}</div>
+          </div>
+        ))}
+      </div>
+    );
+
+    const ShotListBlock = ({ lines }) => {
+      const fields = ["Set","Light","Pose energy","Emotional cue","Key frame"];
+      const parsed = {};
+      lines.forEach(l => {
+        const trimmed = l.replace(/^\s+/, "");
+        fields.forEach(f => {
+          if (trimmed.toLowerCase().startsWith(f.toLowerCase() + ":")) {
+            parsed[f] = trimmed.slice(f.length + 1).trim();
+          }
+        });
+      });
+      if (Object.keys(parsed).length === 0) return null;
+      return (
+        <div style={{marginTop:"12px",padding:"14px 16px",background:"rgba(193,98,47,0.05)",border:"1px solid rgba(193,98,47,0.12)",borderRadius:"4px"}}>
+          <div style={{fontSize:"8px",letterSpacing:"3px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"10px"}}>📸 Shot List</div>
+          {fields.map(f => parsed[f] ? (
+            <div key={f} style={{marginBottom:"7px",display:"flex",gap:"8px"}}>
+              <div style={{fontSize:"8px",color:"rgba(193,98,47,0.45)",textTransform:"uppercase",letterSpacing:"1px",minWidth:"80px",paddingTop:"2px",flexShrink:0}}>{f}</div>
+              <div style={{fontSize:"12px",color:"#e0d4c5",fontFamily:"Georgia,serif",lineHeight:"1.5",fontStyle: f === "Emotional cue" ? "italic" : "normal"}}>{parsed[f]}</div>
+            </div>
+          ) : null)}
+        </div>
+      );
+    };
+
     const ResultsCard = ({ summary, onClose }) => {
       const clean = summary.replace(/^\[MODULE:SUMMARY\]\n?/, "");
       const clientPart = clean.split("---PHOTOGRAPHER SUMMARY---")[0];
       const lines = clientPart.split("\n");
-      const renderLines = () => lines.map((line, i) => {
-        if (line.trim() === "") return <div key={i} style={{height:"0.5em"}}/>;
-        if (line.startsWith("LOOK ") && line.includes("—")) return (
-          <div key={i} style={{marginTop:"20px",marginBottom:"8px",paddingBottom:"6px",borderBottom:"1px solid rgba(193,98,47,0.2)"}}>
-            <div style={{fontSize:"11px",letterSpacing:"2px",color:"#c1622f",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"bold"}}>{line}</div>
-          </div>
-        );
-        if (line.startsWith("✦")) return (
-          <div key={i} style={{marginTop:"16px",marginBottom:"6px"}}>
-            <div style={{fontSize:"9px",letterSpacing:"3px",color:"rgba(193,98,47,0.6)",textTransform:"uppercase",marginBottom:"4px"}}>{line.replace("✦","").split(":")[0].trim()}</div>
-            <div style={{fontSize:"14px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontStyle:"italic"}}>{line.split(":").slice(1).join(":").trim()}</div>
-          </div>
-        );
-        if (line.startsWith("- ")) return (
-          <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7",paddingLeft:"12px"}}>· {line.slice(2)}</div>
-        );
-        const isLabel = line.endsWith(":") || (line.includes(":") && line.split(":")[0].length < 40 && !line.startsWith(" "));
-        if (isLabel) return (
-          <div key={i} style={{fontSize:"9px",letterSpacing:"2px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginTop:"10px",marginBottom:"3px"}}>{line}</div>
-        );
-        return <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7"}}>{line}</div>;
+
+      // Collect shot list lines per look
+      let inShotList = false;
+      let shotLines = [];
+      let renderedShotLists = {}; // keyed by look index
+      let lookCount = 0;
+      lines.forEach((line, i) => {
+        if (line.trim().toLowerCase() === "shot list:") {
+          inShotList = true;
+          shotLines = [];
+          renderedShotLists[lookCount] = { startLine: i, lines: [] };
+          return;
+        }
+        if (inShotList) {
+          if (line.trim() === "" || (line.startsWith("LOOK ") && line.includes("—")) || line.startsWith("✦") || line.startsWith("PULL")) {
+            inShotList = false;
+          } else {
+            if (renderedShotLists[lookCount]) renderedShotLists[lookCount].lines.push(line);
+          }
+        }
+        if (line.startsWith("LOOK ") && line.includes("—")) lookCount++;
       });
-      return (
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.93)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",overflowY:"auto"}}>
-          <div style={{background:"#0a0604",border:"1px solid rgba(193,98,47,0.3)",maxWidth:"520px",width:"100%",padding:"36px 32px",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
-            <button onClick={onClose} style={{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"rgba(193,98,47,0.5)",fontSize:"20px",cursor:"pointer"}}>✕</button>
-            <div style={{textAlign:"center",marginBottom:"24px",paddingBottom:"20px",borderBottom:"1px solid rgba(193,98,47,0.15)"}}>
-              <div style={{fontSize:"9px",letterSpacing:"4px",color:"rgba(193,98,47,0.5)",textTransform:"uppercase",marginBottom:"10px"}}>✦ Mod Bettie Studio ✦</div>
-              <div style={{fontSize:"22px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal",marginBottom:"4px"}}>Aunt Bettie's Closet</div>
-              <div style={{fontSize:"11px",color:"rgba(193,98,47,0.6)",fontStyle:"italic",fontFamily:"Georgia,serif"}}>Your Personal Wardrobe Ritual</div>
+
+      const shotListStartLines = new Set(Object.values(renderedShotLists).map(v => v.startLine));
+      const shotListLineRanges = new Set();
+      Object.values(renderedShotLists).forEach(v => {
+        v.lines.forEach((_, offset) => shotListLineRanges.add(v.startLine + 1 + offset));
+      });
+
+      let currentLookIdx = -1;
+      const rendered = [];
+      let i = 0;
+      while (i < lines.length) {
+        const line = lines[i];
+
+        // Shot list block header
+        if (line.trim().toLowerCase() === "shot list:") {
+          const key = `shotlist-${i}`;
+          const lookKey = currentLookIdx;
+          const sl = renderedShotLists[lookKey];
+          rendered.push(<ShotListBlock key={key} lines={sl ? sl.lines : []}/>);
+          // Skip shot list content lines
+          i++;
+          while (i < lines.length && lines[i].match(/^\s+(Set|Light|Pose|Emotional|Key)/i)) i++;
+          continue;
+        }
+
+        if (line.trim() === "") { rendered.push(<div key={i} style={{height:"0.5em"}}/>); i++; continue; }
+
+        // Look headers
+        if (line.startsWith("LOOK ") && line.includes("—")) {
+          currentLookIdx++;
+          rendered.push(
+            <div key={i} style={{marginTop:"24px",marginBottom:"10px",padding:"10px 14px",background:"rgba(193,98,47,0.06)",border:"1px solid rgba(193,98,47,0.18)",borderRadius:"4px"}}>
+              <div style={{fontSize:"10px",letterSpacing:"2px",color:"#c1622f",textTransform:"uppercase",fontFamily:"Georgia,serif",fontWeight:"bold"}}>{line}</div>
             </div>
-            {renderLines()}
-            <div style={{textAlign:"center",marginTop:"24px",fontSize:"9px",color:"rgba(193,98,47,0.25)",letterSpacing:"3px"}}>✦ modbettie.com ✦</div>
+          );
+          i++; continue;
+        }
+
+        // Section headers with ✦
+        if (line.startsWith("✦")) {
+          const parts = line.replace("✦","").split(":");
+          const label = parts[0].trim();
+          const val = parts.slice(1).join(":").trim();
+          rendered.push(
+            <div key={i} style={{marginTop:"18px",marginBottom:"6px"}}>
+              <div style={{fontSize:"8px",letterSpacing:"3px",color:"rgba(193,98,47,0.55)",textTransform:"uppercase",marginBottom:"4px"}}>{label}</div>
+              {val && <div style={{fontSize:"14px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontStyle:"italic"}}>{val}</div>}
+            </div>
+          );
+          i++; continue;
+        }
+
+        // Color lines
+        const colors = parseColors(line);
+        if (colors.length > 0) {
+          const displayLine = stripColorTags(line);
+          const label = displayLine.replace(/best colors:?/i,"").trim();
+          rendered.push(
+            <div key={i} style={{marginTop:"10px"}}>
+              <div style={{fontSize:"8px",letterSpacing:"2px",color:"rgba(193,98,47,0.45)",textTransform:"uppercase",marginBottom:"6px"}}>Best Colors {label && `— ${label}`}</div>
+              <ColorSwatches colors={colors}/>
+            </div>
+          );
+          i++; continue;
+        }
+
+        // Bullet items
+        if (line.startsWith("- ")) {
+          rendered.push(
+            <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7",paddingLeft:"12px"}}>· {line.slice(2)}</div>
+          );
+          i++; continue;
+        }
+
+        // Field labels (e.g. "What it's for:", "Outfit formula:")
+        const colonIdx = line.indexOf(":");
+        if (colonIdx > 0 && colonIdx < 40 && !line.startsWith(" ")) {
+          const label = line.slice(0, colonIdx);
+          const val = line.slice(colonIdx + 1).trim();
+          rendered.push(
+            <div key={i} style={{marginTop:"8px"}}>
+              <div style={{fontSize:"8px",letterSpacing:"2px",color:"rgba(193,98,47,0.45)",textTransform:"uppercase",marginBottom:"2px"}}>{label}</div>
+              {val && <div style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.6"}}>{val}</div>}
+            </div>
+          );
+          i++; continue;
+        }
+
+        // Regular text
+        rendered.push(
+          <div key={i} style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.7"}}>{line}</div>
+        );
+        i++;
+      }
+
+      return (
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",overflowY:"auto"}}>
+          <div style={{background:"#0a0604",border:"1px solid rgba(193,98,47,0.25)",maxWidth:"560px",width:"100%",padding:"36px 32px",position:"relative",maxHeight:"90vh",overflowY:"auto",borderRadius:"4px"}}>
+            <button onClick={onClose} style={{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"rgba(193,98,47,0.4)",fontSize:"20px",cursor:"pointer"}}>✕</button>
+            <div style={{textAlign:"center",marginBottom:"28px",paddingBottom:"20px",borderBottom:"1px solid rgba(193,98,47,0.12)"}}>
+              <div style={{fontSize:"8px",letterSpacing:"4px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",marginBottom:"10px"}}>✦ Mod Bettie Studio ✦</div>
+              <div style={{fontSize:"22px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal",marginBottom:"4px"}}>Your Style Card</div>
+              <div style={{fontSize:"11px",color:"rgba(193,98,47,0.5)",fontStyle:"italic",fontFamily:"Georgia,serif"}}>Prepared by Aunt Bettie</div>
+            </div>
+            {rendered}
+            <div style={{textAlign:"center",marginTop:"28px",fontSize:"8px",color:"rgba(193,98,47,0.2)",letterSpacing:"3px"}}>✦ modbettie.com ✦</div>
             {!isReturning && (
               <div style={{textAlign:"center",marginTop:"20px"}}>
-                <a href="https://www.modbettie.com/byo" style={{display:"inline-block",padding:"14px 32px",border:"1px solid rgba(193,98,47,0.6)",background:"rgba(193,98,47,0.12)",color:"#c1622f",fontSize:"11px",letterSpacing:"3px",textTransform:"uppercase",fontFamily:"Georgia,serif",textDecoration:"none",borderRadius:"30px"}}>
+                <a href="https://www.modbettie.com/byo" style={{display:"inline-block",padding:"14px 32px",border:"1px solid rgba(193,98,47,0.5)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"10px",letterSpacing:"3px",textTransform:"uppercase",fontFamily:"Georgia,serif",textDecoration:"none",borderRadius:"30px"}}>
                   Book Your Session →
                 </a>
               </div>
@@ -289,37 +270,86 @@
     };
 
     const PhotographerSummary = ({ summary, onClose }) => {
-      const lines = summary.split("\n").filter(l => l.trim());
-      const idx = lines.findIndex(l => l.includes("---PHOTOGRAPHER SUMMARY---"));
-      const photoLines = idx > -1 ? lines.slice(idx + 1) : [];
-      const get = (key) => photoLines.find(l => l.includes(key))?.split(":").slice(1).join(":").trim() || "";
+      const photoSection = summary.split("---PHOTOGRAPHER SUMMARY---")[1] || "";
+      const lines = photoSection.split("\n");
+
+      const getField = (key) => {
+        const idx = lines.findIndex(l => l.includes(key));
+        if (idx === -1) return "";
+        return lines[idx].split(":").slice(1).join(":").trim();
+      };
+
+      // Parse shot lists by look
+      const shotLists = [];
+      let currentLook = null;
+      let inShots = false;
+      lines.forEach(line => {
+        if (line.includes("SHOT LISTS BY LOOK")) { inShots = true; return; }
+        if (inShots) {
+          if (line.match(/^Look \d/i) || line.match(/^LOOK \d/i)) {
+            currentLook = { name: line.replace(/^Look \d+\s*[—-]\s*/i,"").replace(/^LOOK \d+\s*[—-]\s*/i,"").trim(), fields: [] };
+            shotLists.push(currentLook);
+          } else if (currentLook && line.trim() !== "") {
+            currentLook.fields.push(line.trim());
+          }
+        }
+      });
+
+      const fields = [
+        {label:"Client Energy", key:"CLIENT ENERGY", accent:true},
+        {label:"Emotional Anchors", key:"EMOTIONAL ANCHORS"},
+        {label:"Styling Lanes", key:"STYLING LANES TO PREP FOR"},
+        {label:"Session Prep Notes", key:"SESSION PREP NOTES"},
+        {label:"Wardrobe Notes", key:"WARDROBE NOTES"}
+      ];
+
       return (
-        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.93)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",overflowY:"auto"}}>
-          <div style={{background:"#080808",border:"1px solid rgba(255,255,255,0.1)",maxWidth:"480px",width:"100%",padding:"36px 32px",position:"relative",maxHeight:"90vh",overflowY:"auto"}}>
-            <button onClick={onClose} style={{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"rgba(255,255,255,0.3)",fontSize:"20px",cursor:"pointer"}}>✕</button>
-            <div style={{marginBottom:"24px",paddingBottom:"16px",borderBottom:"1px solid rgba(255,255,255,0.07)"}}>
-              <div style={{fontSize:"9px",letterSpacing:"4px",color:"rgba(255,255,255,0.25)",textTransform:"uppercase",marginBottom:"8px"}}>Photographer Session Brief</div>
-              <div style={{fontSize:"18px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal"}}>Client Summary</div>
-              <div style={{fontSize:"11px",color:"rgba(255,255,255,0.3)",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"4px"}}>Prepared by Aunt Bettie · Mod Bettie Studio</div>
+        <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",zIndex:100,display:"flex",alignItems:"center",justifyContent:"center",padding:"20px",overflowY:"auto"}}>
+          <div style={{background:"#080808",border:"1px solid rgba(255,255,255,0.08)",maxWidth:"520px",width:"100%",padding:"36px 32px",position:"relative",maxHeight:"90vh",overflowY:"auto",borderRadius:"4px"}}>
+            <button onClick={onClose} style={{position:"absolute",top:"16px",right:"16px",background:"none",border:"none",color:"rgba(255,255,255,0.25)",fontSize:"20px",cursor:"pointer"}}>✕</button>
+            <div style={{marginBottom:"24px",paddingBottom:"16px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+              <div style={{fontSize:"8px",letterSpacing:"4px",color:"rgba(255,255,255,0.2)",textTransform:"uppercase",marginBottom:"8px"}}>Photographer Session Brief</div>
+              <div style={{fontSize:"20px",color:"#f0e6d8",fontFamily:"Georgia,serif",fontWeight:"normal"}}>Client Summary</div>
+              <div style={{fontSize:"10px",color:"rgba(255,255,255,0.25)",fontFamily:"Georgia,serif",fontStyle:"italic",marginTop:"4px"}}>Prepared by Aunt Bettie · Mod Bettie Studio</div>
             </div>
-            {[
-              {label:"Client Energy", key:"CLIENT ENERGY", accent:true},
-              {label:"Emotional Anchors", key:"EMOTIONAL ANCHORS"},
-              {label:"Session Prep Notes", key:"SESSION PREP NOTES"},
-              {label:"Wardrobe Notes", key:"WARDROBE NOTES"}
-            ].map(({label, key, accent}) => {
-              const val = get(key);
+
+            {fields.map(({label, key, accent}) => {
+              const val = getField(key);
               return val ? (
                 <div key={key} style={{marginBottom:"20px"}}>
-                  <div style={{fontSize:"9px",letterSpacing:"3px",color:accent?"#c1622f":"rgba(255,255,255,0.3)",textTransform:"uppercase",marginBottom:"8px"}}>{label}</div>
-                  <div style={{fontSize:"14px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.8",paddingLeft:"12px",borderLeft:`2px solid ${accent?"rgba(193,98,47,0.4)":"rgba(255,255,255,0.1)"}`}}>{val}</div>
+                  <div style={{fontSize:"8px",letterSpacing:"3px",color:accent?"#c1622f":"rgba(255,255,255,0.25)",textTransform:"uppercase",marginBottom:"8px"}}>{label}</div>
+                  <div style={{fontSize:"13px",color:"#e8ddd0",fontFamily:"Georgia,serif",lineHeight:"1.8",paddingLeft:"12px",borderLeft:`2px solid ${accent?"rgba(193,98,47,0.4)":"rgba(255,255,255,0.08)"}`}}>{val}</div>
                 </div>
               ) : null;
             })}
-            <div style={{marginTop:"24px",padding:"14px",background:"rgba(193,98,47,0.05)",border:"1px solid rgba(193,98,47,0.1)"}}>
-              <div style={{fontSize:"11px",color:"rgba(193,98,47,0.5)",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:"1.7",textAlign:"center"}}>This summary was generated from a client conversation with Aunt Bettie and is intended for studio use only.</div>
+
+            {shotLists.length > 0 && (
+              <div style={{marginTop:"24px",paddingTop:"20px",borderTop:"1px solid rgba(255,255,255,0.06)"}}>
+                <div style={{fontSize:"8px",letterSpacing:"3px",color:"#c1622f",textTransform:"uppercase",marginBottom:"16px"}}>📸 Shot Lists by Look</div>
+                {shotLists.map((look, li) => (
+                  <div key={li} style={{marginBottom:"20px",padding:"16px",background:"rgba(193,98,47,0.04)",border:"1px solid rgba(193,98,47,0.1)",borderRadius:"4px"}}>
+                    <div style={{fontSize:"9px",letterSpacing:"2px",color:"#c1622f",textTransform:"uppercase",marginBottom:"12px"}}>Look {li+1} — {look.name}</div>
+                    {look.fields.map((f, fi) => {
+                      const colonIdx = f.indexOf(":");
+                      if (colonIdx < 0) return null;
+                      const fLabel = f.slice(0, colonIdx).trim();
+                      const fVal = f.slice(colonIdx + 1).trim();
+                      return (
+                        <div key={fi} style={{display:"flex",gap:"10px",marginBottom:"8px"}}>
+                          <div style={{fontSize:"8px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",letterSpacing:"1px",minWidth:"88px",paddingTop:"2px",flexShrink:0}}>{fLabel}</div>
+                          <div style={{fontSize:"12px",color:"#d8ccbe",fontFamily:"Georgia,serif",lineHeight:"1.5",fontStyle:fLabel.toLowerCase().includes("cue")?"italic":"normal"}}>{fVal}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{marginTop:"24px",padding:"14px",background:"rgba(193,98,47,0.04)",border:"1px solid rgba(193,98,47,0.08)",borderRadius:"4px"}}>
+              <div style={{fontSize:"10px",color:"rgba(193,98,47,0.4)",fontFamily:"Georgia,serif",fontStyle:"italic",lineHeight:"1.7",textAlign:"center"}}>This summary was generated from a client conversation with Aunt Bettie and is intended for studio use only.</div>
             </div>
-            <div style={{textAlign:"center",marginTop:"20px",fontSize:"9px",color:"rgba(255,255,255,0.1)",letterSpacing:"3px"}}>✦ modbettie.com ✦</div>
+            <div style={{textAlign:"center",marginTop:"20px",fontSize:"8px",color:"rgba(255,255,255,0.08)",letterSpacing:"3px"}}>✦ modbettie.com ✦</div>
           </div>
         </div>
       );
@@ -342,7 +372,7 @@
 
       if (!entered) return (
         <div style={{minHeight:"100vh",background:"#0d0d0d",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"Georgia,serif",padding:"40px 24px",textAlign:"center"}}>
-          <div style={{fontSize:"9px",letterSpacing:"5px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",marginBottom:"20px"}}>✦ Mod Bettie Studio ✦</div>
+          <div style={{fontSize:"8px",letterSpacing:"5px",color:"rgba(193,98,47,0.4)",textTransform:"uppercase",marginBottom:"20px"}}>✦ Mod Bettie Studio ✦</div>
           <div style={{fontSize:"clamp(32px,6vw,52px)",color:"#f0e6d8",fontWeight:"normal",marginBottom:"16px",lineHeight:"1.2"}}>Aunt Bettie's Closet</div>
           <div style={{fontSize:"clamp(14px,2.5vw,18px)",color:"rgba(193,98,47,0.75)",fontStyle:"italic",marginBottom:"48px",maxWidth:"420px",lineHeight:"1.7"}}>She'll tell you to wear the damn stripes.</div>
           <button
@@ -353,7 +383,7 @@
           >
             Let's Begin →
           </button>
-          <div style={{marginTop:"60px",fontSize:"11px",color:"rgba(255,255,255,0.12)",letterSpacing:"2px"}}>modbettie.com</div>
+          <div style={{marginTop:"60px",fontSize:"10px",color:"rgba(255,255,255,0.12)",letterSpacing:"2px"}}>modbettie.com</div>
         </div>
       );
 
@@ -385,9 +415,13 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               model: "claude-sonnet-4-20250514",
-              max_tokens: 1500,
-              system: SYSTEM_PROMPT,
-              messages: updated.map(m => ({ role: m.role, content: stripModuleTag(m.content).replace(/\[CHOICES:(?:MULTI:)?[^\]]+\]/g, "") }))
+              max_tokens: 2000,
+              messages: updated.map(m => ({
+                role: m.role,
+                content: stripModuleTag(m.content)
+                  .replace(/\[CHOICES:(?:MULTI:)?[^\]]+\]/g, "")
+                  .replace(/\[COLOR:[^\]]+\]/g, "")
+              }))
             })
           });
           const data = await res.json();
@@ -412,7 +446,10 @@
       const handleKey = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); } };
 
       const renderText = (text) => {
-        const clean = stripModuleTag(text).replace(/\[CHOICES:(?:MULTI:)?[^\]]+\]/g, "").trimEnd();
+        const clean = stripModuleTag(text)
+          .replace(/\[CHOICES:(?:MULTI:)?[^\]]+\]/g, "")
+          .replace(/\[COLOR:[^\]]+\]/g, "")
+          .trimEnd();
         return clean.split("\n").map((line, i) => {
           if (line === "") return <div key={i} style={{ height: "0.4em" }} />;
           if (line.includes("---PHOTOGRAPHER SUMMARY---")) return null;
