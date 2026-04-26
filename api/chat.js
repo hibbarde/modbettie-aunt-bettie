@@ -97,10 +97,10 @@ If mixed session: "We're dressing for more than one mood. Which lanes do we need
 
 MODULE 6 — deliver [MODULE:SUMMARY] immediately.
 
-COLOR FORMAT — CRITICAL: Every time you list "Best colors" for any look, you MUST use this exact format for each color:
-[COLOR: Color Name #HEXCODE]
-Always list 3-5 colors. Example:
-Best colors: [COLOR: Burnt Copper #A0522D] [COLOR: Deep Ivory #F5ECD7] [COLOR: Forest Shadow #2D4A3E] [COLOR: Warm Slate #708090]
+COLOR FORMAT — THIS IS MANDATORY, NO EXCEPTIONS: Every "Best colors" line in the summary MUST use this exact format for every color. Do not write color names as plain text. Do not skip this.
+Format: [COLOR: Color Name #HEXCODE]
+Example line: Best colors: [COLOR: Charcoal Black #2C2C2C] [COLOR: Warm Ivory #F5ECD7] [COLOR: Burnt Copper #A0522D] [COLOR: Deep Forest #2D4A3E]
+If you write "Best colors:" without [COLOR: Name #HEX] tags, you have made an error.
 
 FINAL SUMMARY FORMAT:
 [MODULE:SUMMARY]
@@ -162,7 +162,7 @@ Look 3 — [archetype name]:
 
 NEVER: ask what to hide / body-shame / flood with questions / rush / restate twice.`;
 
-function trimMessages(messages, maxPairs = 10) {
+function trimMessages(messages, maxPairs = 6) {
   if (messages.length <= maxPairs * 2) return messages;
   const first = messages.slice(0, 1);
   const rest = messages.slice(-(maxPairs * 2 - 1));

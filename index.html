@@ -54,7 +54,13 @@
 
     const isReturning = window.location.search.includes("returning=true");
 
-    const parseModule = (text) => { const m = text.match(/^\[MODULE:(\w+)\]/); return m ? m[1] : null; };
+    const parseModule = (text) => {
+      const m = text.match(/\[MODULE:(\w+)\]/);
+      if (m) return m[1];
+      // Backup: detect summary by content if tag was missing
+      if (text.includes("SESSION STYLE ESSENCE") || text.includes("WHO WE'RE DRESSING")) return "SUMMARY";
+      return null;
+    };
     const stripModuleTag = (text) => text.replace(/^\[MODULE:\w+\]\n?/, "");
     const parseChoices = (text) => {
       const multiMatch = text.match(/\[CHOICES:MULTI:\s*([^\]]+)\]/);
@@ -433,7 +439,7 @@
           else if (mod) setCurrentModule(parseInt(mod));
           setMessages(prev => [...prev, { role: "assistant", content: reply }]);
         } catch(e) {
-          setMessages(prev => [...prev, { role: "assistant", content: "Something interrupted us — please try again." }]);
+          setMessages(prev => [...prev, { role: "assistant", content: "[RETRY]" }]);
         }
         setLoading(false);
       };
@@ -510,7 +516,23 @@
               const showChoices = choices.length > 0 && (isLastAssistant || choicesUsed);
               return (
                 <div key={i}>
-                  <div style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
+                  {m.role === "assistant" && m.content === "[RETRY]" ? (
+                    <div style={{display:"flex",justifyContent:"flex-start"}}>
+                      <div style={{marginRight:"10px",marginTop:"4px",flexShrink:0,opacity:0.65}}><MoonIcon/></div>
+                      <div style={{padding:"16px 20px",borderRadius:"4px 20px 20px 20px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(193,98,47,0.09)",display:"flex",flexDirection:"column",gap:"12px"}}>
+                        <div style={{fontSize:"14px",color:"rgba(240,230,216,0.5)",fontStyle:"italic"}}>Something interrupted us.</div>
+                        <button onClick={() => {
+                          const lastUser = [...messages].reverse().find(m => m.role === "user");
+                          if (lastUser) {
+                            setMessages(prev => prev.slice(0,-1));
+                            sendMessage(lastUser.content);
+                          }
+                        }} style={{padding:"9px 20px",border:"1px solid rgba(193,98,47,0.4)",background:"rgba(193,98,47,0.1)",color:"#c1622f",fontSize:"12px",letterSpacing:"2px",textTransform:"uppercase",fontFamily:"Georgia,serif",cursor:"pointer",borderRadius:"30px",width:"fit-content"}}>
+                          Try again →
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
                     {m.role==="assistant" && <div style={{marginRight:"10px",marginTop:"4px",flexShrink:0,opacity:0.65}}><MoonIcon/></div>}
                     <div style={{maxWidth:"82%",padding:"16px 20px",borderRadius:m.role==="user"?"20px 20px 4px 20px":"4px 20px 20px 20px",background:m.role==="user"?"linear-gradient(135deg,#c1622f,#8b3d1a)":"rgba(255,255,255,0.03)",border:m.role==="user"?"none":"1px solid rgba(193,98,47,0.09)",color:m.role==="user"?"#fdf0e6":"#e8ddd0",fontSize:"15px",lineHeight:"1.75"}}>
                       {renderText(clean)}
