@@ -129,23 +129,63 @@ WARDROBE NOTES: (fit, structure, movement notes)
 
 NEVER: ask what to hide / body-shame / flood with questions / rush / restate twice.`;
 
+// Keep only the last N messages to prevent context overflow
+function trimMessages(messages, maxPairs = 10) {
+  if (messages.length <= maxPairs * 2) return messages;
+  // Always keep the first message (welcome), trim the middle
+  const first = messages.slice(0, 1);
+  const rest = messages.slice(-(maxPairs * 2 - 1));
+  return [...first, ...rest];
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  
-  const body = { ...req.body, system: SYSTEM_PROMPT };
-  
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify(body)
-  });
-  const data = await response.json();
-  res.status(200).json(data);
+
+  try {
+    const { messages, model, max_tokens } = req.body;
+
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid request: messages array required' });
+    }
+
+    const trimmed = trimMessages(messages);
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: model || 'claude-sonnet-4-20250514',
+        max_tokens: max_tokens || 1500,
+        system: SYSTEM_PROMPT,
+        messages: trimmed
+      })
+    });
+
+    const data = await response.json();
+
+    // If Anthropic returned an error, surface it clearly
+    if (data.error) {
+      console.error('Anthropic API error:', data.error);
+      return res.status(200).json({
+        content: [{ type: 'text', text: 'Something interrupted us — please try again.' }],
+        _error: data.error
+      });
+    }
+
+    return res.status(200).json(data);
+
+  } catch (err) {
+    console.error('Handler error:', err);
+    return res.status(200).json({
+      content: [{ type: 'text', text: 'Something interrupted us — please try again.' }],
+      _error: err.message
+    });
+  }
 }
