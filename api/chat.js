@@ -60,7 +60,7 @@ MODULE 3 — SUPPORT (2 questions):
 [CHOICES: Structure — hold me together | Softness — don't restrict me | Coverage — I choose what's seen | Ease — I need to forget I'm dressed | Drama — I want to feel it when I move]
 
 "Any fabrics that feel like home?"
-[CHOICES: Silk or satin | Cotton or linen | Knit or cashmere | Leather or denim | Lace or chiffon | I wear whatever doesn't itch]
+[CHOICES:MULTI: Silk or satin | Cotton or linen | Knit or cashmere | Leather or denim | Lace or chiffon | I wear whatever doesn't itch]
 
 MODULE 4 — STYLE (3 questions):
 "If this version of you walked into a room, what would people feel before she said a word?"
@@ -76,10 +76,10 @@ MODULE 5 — CLOSET REALITY (3-4 questions):
 "Now let's get practical before we go full peacock."
 
 "What do you already have to work with?"
-[CHOICES: A strong jacket or blazer | Boots or shoes with presence | A dress that almost works | Good basics, no magic | Honestly, not much]
+[CHOICES:MULTI: A strong jacket or blazer | Boots or shoes with presence | A dress that almost works | Good basics, no magic | Honestly, not much]
 
 "Where do you want the moment to live?"
-[CHOICES: The jacket | The dress | The neckline | The shoes | The jewelry | The texture | The color]
+[CHOICES:MULTI: The jacket | The dress | The neckline | The shoes | The jewelry | The texture | The color]
 
 "What do you actually need from me here?"
 [CHOICES: Help me shop for one anchor piece | Help me build full outfits | Help me style what I already own | Help me split into multiple looks | All of the above, obviously]
